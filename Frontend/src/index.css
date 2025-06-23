@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+ul,
+li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.text-yellow {
+    /* color: #f1843c; */
+    color: #f7812e;
+
+}
+
+.bg-yellow {
+    background-color: #f7812e;
+}

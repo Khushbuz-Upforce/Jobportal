@@ -1,0 +1,171 @@
+import React, { useEffect, useState } from "react";
+import {
+    getCompanies,
+    updateCompany,
+    uploadFile,
+} from "../../../Servises/adminApi";
+import EditCompanyModal from "../../../Components/AdminComponents/EditCompanyModal";
+import CreateCompanyModal from "../../../Components/AdminComponents/CreateCompanyModal";
+import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
+
+const AdminCompaniesPage = () => {
+    const [companies, setCompanies] = useState([]);
+    const [editingCompany, setEditingCompany] = useState(null);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    const [formData, setFormData] = useState({
+        _id: "",
+        name: "",
+        email: "",
+        website: "",
+        logo: "",
+    });
+
+    const fetchCompanies = async () => {
+        try {
+            const res = await getCompanies();
+            setCompanies(res.data);
+        } catch (error) {
+            console.error("Error fetching companies:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchCompanies();
+    }, []);
+
+    const handleEdit = (company) => {
+        setEditingCompany(company._id);
+        setFormData({
+            _id: company._id,
+            name: company.name || "",
+            email: company.email || "",
+            website: company.website || "",
+            logo: company.logo || "",
+        });
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const fd = new FormData();
+        fd.append("file", file);
+
+        if (formData.logo) {
+            const oldFilename = formData.logo.split("/").pop();
+            fd.append("oldFile", oldFilename);
+        }
+
+        try {
+            const res = await uploadFile(fd);
+            setFormData((prev) => ({
+                ...prev,
+                logo: res.data.url,
+            }));
+        } catch (error) {
+            console.error("File upload failed:", error);
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            const { _id, ...data } = formData;
+            await updateCompany(_id, data);
+            setEditingCompany(null);
+            fetchCompanies();
+        } catch (error) {
+            console.error("Error updating company:", error);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setEditingCompany(null);
+    };
+
+    return (
+        <AdminSidebarLayout>
+            <div className="pt-5 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">Company Management</h1>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition w-full sm:w-auto"
+                    >
+                        + Create Company
+                    </button>
+                </div>
+
+                <div className="overflow-x-auto bg-white shadow-xl rounded-2xl border border-gray-200">
+                    <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-200 text-gray-700 text-xs uppercase tracking-wide">
+                            <tr>
+                                <th className="px-5 py-3 text-left">#</th>
+                                <th className="px-5 py-3 text-left">Logo</th>
+                                <th className="px-5 py-3 text-left">Name</th>
+                                <th className="px-5 py-3 text-left">Email</th>
+                                <th className="px-5 py-3 text-left">Industry</th>
+                                <th className="px-5 py-3 text-left">Website</th>
+                                <th className="px-5 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-100">
+                            {companies.map((company, i) => (
+                                <tr key={company._id} className="hover:bg-gray-50 transition">
+                                    <td className="px-5 py-3 text-gray-600">{i + 1}</td>
+                                    <td className="px-5 py-3">
+                                        <img
+                                            src={company.logo}
+                                            alt="Company Logo"
+                                            className="w-10 h-10 object-cover rounded-full border"
+                                        />
+                                    </td>
+                                    <td className="px-5 py-3">{company.name}</td>
+                                    <td className="px-5 py-3">{company.email}</td>
+                                    <td className="px-5 py-3">{company.industry}</td>
+                                    <td className="px-5 py-3 break-all">
+                                        <a
+                                            href={company.website}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            {company.website}
+                                        </a>
+                                    </td>
+                                    <td className="px-5 py-3">
+                                        <button
+                                            onClick={() => handleEdit(company)}
+                                            className="text-sm text-green-700 px-4 py-1.5 rounded-lg hover:bg-green-100 transition"
+                                        >
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {editingCompany && (
+                    <EditCompanyModal
+                        formData={formData}
+                        setFormData={setFormData}
+                        onSave={handleSave}
+                        onClose={handleCloseModal}
+                        onFileChange={handleFileChange}
+                    />
+                )}
+
+                {isCreateModalOpen && (
+                    <CreateCompanyModal
+                        onClose={() => setIsCreateModalOpen(false)}
+                        onSuccess={fetchCompanies}
+                    />
+                )}
+            </div>
+        </AdminSidebarLayout>
+    );
+};
+
+export default AdminCompaniesPage;
