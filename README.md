@@ -18,12 +18,16 @@ Description:
    
  ## For 🔸 Backend setup 
  -cd Backend
+ 
  -npm install
  
  ## Create .env file in /Backend:
  PORT=3000
- MONGO_URI=mongodb://localhost:27017/job-board
- JWT_SECRET=
+ 
+ MONGO_URI=mongodb://localhost:27017/Jobportal
+ 
+ JWT_SECRET= your_ JWT_SECRET
+ 
 
  ## FOr start Server 
  -npm start
@@ -31,5 +35,6 @@ Description:
 
  ## 🔸 Frontend Setup
  npm install
+ 
  npm run dev
  
