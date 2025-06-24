@@ -2,7 +2,24 @@ const Job = require("../Models/RecruiterJob");
 const Application = require("../Models/ApplicationModel");
 const Company = require("../Models/CompanyModel");
 const UserModel = require("../Models/UserModel");
-
+const Notification = require('../Models/NotificationModel.js'); // ✅ Import Notification model
+const getNotigication = async (req, res) => {
+    try {
+        const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
+        res.json({ notifications });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to load notifications' });
+    }
+};
+const clearNotifications = async (req, res) => {
+    try {
+        await Notification.deleteMany(); // optionally: add filter by userId if needed
+        res.status(200).json({ message: "Notifications cleared" });
+    } catch (err) {
+        console.error("Failed to clear notifications:", err);
+        res.status(500).json({ message: "Error clearing notifications" });
+    }
+};
 // const createJob = async (req, res) => {
 //     try {
 //         const jobData = req.body;
@@ -104,7 +121,7 @@ const getAllJobs = async (req, res) => {
 
         const totalCount = await Job.countDocuments(query);
         const totalPages = Math.ceil(totalCount / limit);
-        console.log(jobs, "AllJobs");
+        // console.log(jobs, "AllJobs");
 
 
         res.status(200).json({ jobs, totalPages });
@@ -132,7 +149,6 @@ const deleteJob = async (req, res) => {
         res.status(500).json({ message: "Error deleting job", error });
     }
 };
-// Manage companies
 
 // Create a new company
 
@@ -206,13 +222,13 @@ const getApplications = async (req, res) => {
             ...(search && {
                 $or: [
                     { applicantName: { $regex: search, $options: "i" } },
-                    { job: { $in: jobIds } },
+                    { jobId: { $in: jobIds } },
                 ],
             }),
         };
 
         const applications = await Application.find(query)
-            .populate("job", "title location category") // optional: more job fields
+            .populate("jobId", "title location category") // optional: more job fields
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
 
@@ -227,19 +243,68 @@ const getApplications = async (req, res) => {
         res.status(500).json({ message: "Error fetching applications" });
     }
 };
+// const creatApplication = async (req, res) => {
+//     try {
+//         // console.log(req.body, "Aplication create");
+
+//         const newApp = new Application(req.body);
+//         await newApp.save();
+//         res.status(201).json(newApp);
+//     } catch (err) {
+//         res.status(500).json({ message: "Error creating application" });
+//     }
+// };
+
+// routes/admin.js
+
+
+
 const creatApplication = async (req, res) => {
     try {
-        // console.log(req.body, "Aplication create");
+        const { applicantName, email, phone, resume, coverLetter, jobId } = req.body;
+        console.log(req.body, "Application");
 
-        const newApp = new Application(req.body);
+        // ✅ Basic validation
+        if (!applicantName || !email || !phone || !coverLetter || !jobId) {
+            return res.status(400).json({ message: "All fields are required." });
+        }
+
+        // ✅ Check if job exists
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: "Job not found." });
+        }
+
+        // ✅ Create application
+        const newApp = new Application({
+            applicantName,
+            email,
+            phone,
+            coverLetter,
+            resume,
+            jobId,
+        });
         await newApp.save();
+
+        // ✅ Create and save notification
+        const notification = new Notification({
+            message: `${applicantName} applied for "${job.title}"`,
+            type: "application",
+        });
+        await notification.save();
+
+        // ✅ Emit real-time notification
+        if (req.app.get("io")) {
+            req.app.get("io").emit("new_notification", notification);
+        }
+
         res.status(201).json(newApp);
     } catch (err) {
+        console.error("Application creation failed:", err);
         res.status(500).json({ message: "Error creating application" });
     }
 };
 
-// routes/admin.js
 const getDashboard = async (req, res) => {
     try {
         const [userCount, adminCount, companyCount, jobsCount, applicationsCount] = await Promise.all([
@@ -249,6 +314,7 @@ const getDashboard = async (req, res) => {
             Job.countDocuments(),
             Application.countDocuments(),
         ]);
+        // console.log("DOne");
 
         res.json({
             userCount,
@@ -274,4 +340,6 @@ module.exports = {
     getApplications,
     creatApplication,
     getDashboard,
+    getNotigication,
+    clearNotifications
 }

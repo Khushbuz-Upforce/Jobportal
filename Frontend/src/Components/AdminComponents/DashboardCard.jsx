@@ -24,6 +24,8 @@ const DashboardCard = () => {
         try {
             const res = await getDashboardStats();
             setStats(res.data);
+            console.log(res.data, "Users");
+
         } catch (error) {
             console.error("Failed to fetch dashboard stats:", error);
         }

@@ -38,8 +38,6 @@ const AdminJobsPage = () => {
 
             const res = await getJobs(params);
             setJobs(res.data.jobs);
-            console.log(res.data.jobs);
-
             setTotalPages(res.data.totalPages);
         } catch (err) {
             setError("Failed to load jobs.");

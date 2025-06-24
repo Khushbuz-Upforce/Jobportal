@@ -2,49 +2,71 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const PORT = process.env.PORT || 3000;
 const path = require("path");
 const fs = require("fs");
+const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
-
-// MongoDB Connection
-const ConnectDB = require('./Config/database')
-ConnectDB();
-
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-app.use(bodyParser.urlencoded({ extended: true })); // Change `true` or `false` as needed
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
-// Create uploads/jobs folder if it doesn't exist
+// MongoDB Connection
+const ConnectDB = require('./Config/database');
+ConnectDB();
+
+// Middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static folder for uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Access controll
 
+// CORS
 const corsOptions = {
     origin: ["http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 };
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-
 
 // Routes
 app.get('/', (req, res) => {
-    res.send('Hello');
+    res.send('Hello from Job Portal API');
+});
+app.use('/', require('./Routes/indexRoute'));
+
+// Create HTTP server and Socket.IO server
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    }
 });
 
-app.use('/', require('./Routes/indexRoute'))
+// Store socket.io instance globally to access in controllers
+app.set("io", io);
 
+// Socket.IO events
+io.on("connection", (socket) => {
+    console.log("New client connected:", socket.id);
 
-// Start Server
-app.listen(PORT, (err) => {
+    socket.on("disconnect", () => {
+        console.log("Client disconnected:", socket.id);
+    });
+});
+
+// Start server using HTTP server (important for socket.io to work)
+server.listen(PORT, (err) => {
     if (err) {
         console.log(err);
     }
-    console.log(`Server running on port : ${PORT}`);
+    console.log(`Server running with Socket.IO on http://localhost:${PORT}`);
 });

@@ -1,4 +1,4 @@
-export default function ApplicationTable({ applications, onView }) {
+const ApplicationTable = ({ applications, onView }) => {
     return (
         <div className="overflow-x-auto bg-white shadow-md rounded-xl">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
@@ -18,7 +18,7 @@ export default function ApplicationTable({ applications, onView }) {
                             <td className="p-2">{++i}</td>
                             <td className="p-2">{app.applicantName}</td>
                             <td className="p-2">{app.email}</td>
-                            <td className="p-2">{app.job?.title}</td>
+                            <td className="p-2">{app.jobId?.title}</td>
                             <td className="p-2">{new Date(app.createdAt).toLocaleDateString()}</td>
                             <td className="p-2">
                                 <button
@@ -35,3 +35,4 @@ export default function ApplicationTable({ applications, onView }) {
         </div>
     );
 }
+export default ApplicationTable

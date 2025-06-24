@@ -3,6 +3,8 @@ import { getApplications } from "../../../Servises/adminApi";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import ApplicationTable from "../../../Components/AdminComponents/ApplicationTable";
 import ApplicationDetailsModal from "../../../Components/AdminComponents/ApplicationDetailsModal";
+import socket from "../../../socket"; // 🔌 Socket.IO client
+import { toast } from 'react-toastify';
 
 const AdminApplicationsPage = () => {
     const [applications, setApplications] = useState([]);
@@ -14,13 +16,29 @@ const AdminApplicationsPage = () => {
     const fetchApplications = async () => {
         const res = await getApplications(`search=${search}&page=${page}&limit=10`);
         setApplications(res.data.applications);
-        setTotalPages(res.data.totalPages);
         console.log(res.data.applications);
+
+        setTotalPages(res.data.totalPages);
     };
 
     useEffect(() => {
         fetchApplications();
+
     }, [search, page]);
+
+    // Listen to real-time updates from Socket.IO
+    useEffect(() => {
+        socket.on("new-application", (newApp) => {
+            toast.success("New application received");
+
+            // Only update if on the first page
+            if (page === 1) {
+                setApplications(prev => [newApp, ...prev.slice(0, 9)]); // Keep max 10
+            }
+        });
+
+        return () => socket.off("new-application");
+    }, [page]);
 
     return (
         <AdminSidebarLayout>
@@ -28,20 +46,19 @@ const AdminApplicationsPage = () => {
                 <h1 className="text-xl mb-3 font-bold text-gray-800">
                     Applications
                 </h1>
+
                 <input
                     type="text"
                     placeholder="Search by applicant or job title..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-50 border border-gray-300 p-1 px-2 text-[12px] rounded mb-4  md:text-sm"
+                    className="w-50 border border-gray-300 p-1 px-2 text-[12px] rounded mb-4 md:text-sm"
                 />
 
-                <div className="">
-                    <ApplicationTable
-                        applications={applications}
-                        onView={(app) => setSelectedApplication(app)}
-                    />
-                </div>
+                <ApplicationTable
+                    applications={applications}
+                    onView={(app) => setSelectedApplication(app)}
+                />
 
                 {/* Pagination */}
                 <div className="flex flex-wrap justify-center mt-4 gap-2">
@@ -49,7 +66,9 @@ const AdminApplicationsPage = () => {
                         <button
                             key={num}
                             onClick={() => setPage(num + 1)}
-                            className={`px-3 py-1 rounded text-sm ${page === num + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                            className={`px-3 py-1 rounded text-sm ${page === num + 1
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-800"
                                 }`}
                         >
                             {num + 1}
@@ -57,7 +76,7 @@ const AdminApplicationsPage = () => {
                     ))}
                 </div>
 
-                {/* Details Modal */}
+                {/* Modal */}
                 {selectedApplication && (
                     <ApplicationDetailsModal
                         application={selectedApplication}

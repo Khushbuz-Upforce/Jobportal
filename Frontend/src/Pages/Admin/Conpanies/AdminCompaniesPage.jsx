@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
     getCompanies,
     updateCompany,
-    uploadFile,
+    uploadCompanyLogo,
 } from "../../../Servises/adminApi";
 import EditCompanyModal from "../../../Components/AdminComponents/EditCompanyModal";
 import CreateCompanyModal from "../../../Components/AdminComponents/CreateCompanyModal";
@@ -58,7 +58,7 @@ const AdminCompaniesPage = () => {
         }
 
         try {
-            const res = await uploadFile(fd);
+            const res = await uploadCompanyLogo(fd);
             setFormData((prev) => ({
                 ...prev,
                 logo: res.data.url,
@@ -85,14 +85,15 @@ const AdminCompaniesPage = () => {
 
     return (
         <AdminSidebarLayout>
-            <div className="pt-5 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Company Management</h1>
+            <div className="pt-5  sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+                <h1 className="text-xl font-bold text-gray-800">Company Management</h1>
+
+                <div className="mb-4 text-right">
                     <button
+                        className="bg-green-600 text-white px-4 py-2 rounded"
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition w-full sm:w-auto"
                     >
-                        + Create Company
+                        + Create
                     </button>
                 </div>
 

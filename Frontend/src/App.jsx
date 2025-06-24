@@ -33,6 +33,7 @@ const App = () => {
         <Route path="/admin/company" element={<ProtectedRoute role="admin"><AdminCompaniesPage /></ProtectedRoute>} />
         <Route path="/admin/aplication" element={<ProtectedRoute role="admin"><AdminApplicationsPage /></ProtectedRoute>} />
         <Route path="/admin/profile" element={<ProtectedRoute role="admin"><UserProfile /></ProtectedRoute>} />
+        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
 
       </Routes>
     </BrowserRouter>

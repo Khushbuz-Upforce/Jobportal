@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createCompany, uploadFile } from "../../Servises/adminApi";
+import { createCompany, uploadCompanyLogo } from "../../Servises/adminApi";
 
 const CreateCompanyModal = ({ onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ const CreateCompanyModal = ({ onClose, onSuccess }) => {
             if (file) {
                 const fd = new FormData();
                 fd.append("file", file);
-                const res = await uploadFile(fd);
+                const res = await uploadCompanyLogo(fd);
                 formData.logo = res.data.url;
             }
 

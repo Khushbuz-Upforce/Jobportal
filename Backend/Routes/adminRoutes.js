@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require("../Middleware/Auth");
-const { getAllJobs, updateJob, deleteJob, getAllCompanies, updateCompany, createJob, createCompany, getApplications, creatApplication, getDashboard } = require("../Controllers/AdminController");
+const { getAllJobs, updateJob, deleteJob, getAllCompanies, updateCompany, createJob, createCompany, getApplications, creatApplication, getDashboard, getNotigication, clearNotifications } = require("../Controllers/AdminController");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -129,4 +129,7 @@ router.post("/createApplications", verifyToken, isAdmin, creatApplication)
 
 // Dashboard count stat
 router.get('/dashboardCount', verifyToken, isAdmin, getDashboard)
+router.get('/getNotigication', verifyToken, isAdmin, getNotigication)
+router.delete('/clear', clearNotifications);
+
 module.exports = router;

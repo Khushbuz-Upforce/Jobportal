@@ -26,7 +26,7 @@ const UserProfile = () => {
             <div className="min-h-screen ">
                 <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-xl mb-3 font-bold text-gray-800">Admin Profile</h1>
+                        <h1 className="text-xl mb-3 font-bold text-gray-800 uppercase" >{user.role} Profile</h1>
 
                         {!editMode && (
                             <button

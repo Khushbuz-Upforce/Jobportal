@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { updateJob, createJob, getCompanies, uploadJobFiles } from "../../Servises/adminApi";
+import { updateJob, createJob, getCompanies, uploadJobImage } from "../../Servises/adminApi";
 
 export default function JobFormModal({ job, onClose, onSuccess }) {
     const [companies, setCompanies] = useState([]);
@@ -32,7 +32,7 @@ export default function JobFormModal({ job, onClose, onSuccess }) {
         if (file) {
             const fileData = new FormData();
             fileData.append("file", file);
-            const res = await uploadJobFiles(fileData);
+            const res = await uploadJobImage(fileData);
             setFormData({ ...formData, JobImage: res.data.url }); // updated to match your backend key
         }
     };

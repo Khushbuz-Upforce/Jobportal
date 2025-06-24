@@ -14,7 +14,7 @@ const recruiterJobSchema = new mongoose.Schema({
     title: String,
     description: String,
     location: String,
-    salary: Number,
+    salary: String,
     category: String,
     status: { type: String, enum: ["open", "closed", "draft"], default: "open" },
     JobImage: String // optional file upload (image, PDF, etc.)

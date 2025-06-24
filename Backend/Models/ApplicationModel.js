@@ -7,7 +7,7 @@ const applicationSchema = new mongoose.Schema({
     phone: String,
     resume: String,
     coverLetter: String,
-    job: {
+    jobId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "RecruiterJob", // <--- important!
     },
