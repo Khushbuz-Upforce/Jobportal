@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../assets/logo.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../features/authSlice';
+import { registerUser } from '../../redux/authSlice';
 import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';

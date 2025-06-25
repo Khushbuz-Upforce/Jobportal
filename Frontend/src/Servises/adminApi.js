@@ -21,7 +21,7 @@ export const getUser = async ({
     return API.get("/auth/getAllUsers", { params });
 };
 
-export const createUser = (data) => API.post("/auth/user", data);
+export const createUser = (data) => API.post("/auth/register", data);
 export const updateUser = (id, data) => API.put(`/auth/user/${id}`, data);
 export const deleteUser = (id) => API.delete(`/auth/user/${id}`);
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
-import { getUser, deleteUser, createUser, updateUser } from "../../../Servises/adminApi";
+import { getUser, deleteUser } from "../../../Servises/adminApi";
 import UserModal from "../../../Components/AdminComponents/UserModal"; // import here
 
 const AdminUsersPage = () => {
@@ -16,8 +16,8 @@ const AdminUsersPage = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [formData, setFormData] = useState({ username: "", email: "", password: "", role: "user" });
     const [editUserId, setEditUserId] = useState(null);
+    const [initialValues, setInitialValues] = useState({ username: "", email: "", password: "", role: "user" });
 
     const fetchUsers = async () => {
         try {
@@ -57,33 +57,19 @@ const AdminUsersPage = () => {
         }
     };
 
+
     const handleOpenCreate = () => {
-        setFormData({ username: "", email: "", password: "", role: "user" });
+        setInitialValues({ username: "", email: "", password: "", role: "user" });
         setIsEditMode(false);
         setEditUserId(null);
         setShowModal(true);
     };
 
     const handleOpenEdit = (user) => {
-        setFormData({ username: user.username, email: user.email, password: "", role: user.role });
+        setInitialValues({ username: user.username, email: user.email, role: user.role });
         setIsEditMode(true);
         setEditUserId(user._id);
         setShowModal(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (isEditMode) {
-                await updateUser(editUserId, formData);
-            } else {
-                await createUser(formData);
-            }
-            setShowModal(false);
-            fetchUsers();
-        } catch (error) {
-            console.error("Failed to save user:", error);
-        }
     };
 
     return (
@@ -198,11 +184,15 @@ const AdminUsersPage = () => {
             <UserModal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                onSubmit={handleSubmit}
                 isEditMode={isEditMode}
-                formData={formData}
-                setFormData={setFormData}
+                initialValues={initialValues}
+                editUserId={editUserId}
+                onSuccess={() => {
+                    setShowModal(false);
+                    fetchUsers();
+                }}
             />
+
         </AdminSidebarLayout>
     );
 };

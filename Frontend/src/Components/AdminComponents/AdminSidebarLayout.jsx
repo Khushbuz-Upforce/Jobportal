@@ -43,7 +43,7 @@ const AdminSidebarLayout = ({ children }) => {
                                         key={link.to}
                                         to={link.to}
                                         className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200
-                    ${isActive
+                                            ${isActive
                                                 ? "bg-[#f7812e]/10 text-[#f7812e] font-semibold border border-[#f7812e]/30"
                                                 : "text-gray-700 hover:bg-[#f7812e]/10 hover:text-[#f7812e] hover:font-medium"
                                             }`}

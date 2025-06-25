@@ -213,7 +213,11 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const updates = req.body;
+        const { username, email, password, role } = req.body;
+        console.log(req.body, "pdate");
+
+
+
         const user = await UserModel.findByIdAndUpdate(id, updates, { new: true });
         res.status(200).json({ success: true, user });
     } catch (error) {

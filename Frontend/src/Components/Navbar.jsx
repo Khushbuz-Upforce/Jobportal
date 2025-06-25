@@ -3,7 +3,7 @@ import Logo from '../assets/logo.png';
 import { Link } from "react-router-dom";
 import { Menu, X, UserCircle, Bell } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutUser } from '../features/authSlice';
+import { logoutUser } from '../redux/authSlice';
 import NotificationModal from './NotificationModal';
 import socket from '../socket';
 import { clearNotifications, getNotigication } from '../Servises/adminApi';
@@ -46,7 +46,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50 px-4 lg:px-10">
+      <nav className="fixed top-0 left-0 right-0  bg-white shadow-sm z-50 px-4 lg:px-10">
         <div className="max-w-screen-xl mx-auto flex justify-between items-center h-16">
           {/* Left: Logo & Mobile Menu */}
           <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
               </Link>
             )}
 
-            {/* 🔔 Notification Bell for admin */}
+            {/*  Notification Bell for admin */}
             {user?.role === 'admin' && (
               <div
                 className="relative cursor-pointer"
@@ -84,7 +84,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
               </div>
             )}
 
-            {/* 👤 Profile Icon */}
+            {/*  Profile Icon */}
             <Link to={
               user?.role === 'admin' ? "/admin/profile"
                 : user?.role === 'recruiter' ? "/recruiter/profile"
@@ -95,7 +95,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
               </div>
             </Link>
 
-            {/* 🔐 Login / Logout */}
+            {/*  Login / Logout */}
             {!isAuthenticated ? (
               <Link to="/login">
                 <button className="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 transition">
@@ -114,7 +114,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
         </div>
       </nav>
 
-      {/* 🔔 Notification Modal */}
+      {/*  Notification Modal */}
       {showModal && (
         <NotificationModal
           notifications={notifications}
