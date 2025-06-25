@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS
 const corsOptions = {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://jobportal-5f7t.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 };
