@@ -23,10 +23,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static folder for uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-
 // CORS
 const corsOptions = {
     origin: ["http://localhost:5173"],

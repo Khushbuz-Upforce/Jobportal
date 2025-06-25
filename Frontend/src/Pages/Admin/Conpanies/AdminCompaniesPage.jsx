@@ -52,9 +52,12 @@ const AdminCompaniesPage = () => {
         const fd = new FormData();
         fd.append("file", file);
 
+        // Extract public_id from Cloudinary URL
         if (formData.logo) {
-            const oldFilename = formData.logo.split("/").pop();
-            fd.append("oldFile", oldFilename);
+            const urlParts = formData.logo.split("/");
+            const fileName = urlParts[urlParts.length - 1].split(".")[0];
+            const publicId = `company_logos/${fileName}`;
+            fd.append("oldFile", publicId);
         }
 
         try {
@@ -67,6 +70,7 @@ const AdminCompaniesPage = () => {
             console.error("File upload failed:", error);
         }
     };
+
 
     const handleSave = async () => {
         try {

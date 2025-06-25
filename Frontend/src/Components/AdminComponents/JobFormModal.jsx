@@ -29,13 +29,29 @@ export default function JobFormModal({ job, onClose, onSuccess }) {
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            const fileData = new FormData();
-            fileData.append("file", file);
-            const res = await uploadJobImage(fileData);
-            setFormData({ ...formData, JobImage: res.data.url }); // updated to match your backend key
+        if (!file) return;
+
+        const form = new FormData();
+        form.append("file", file);
+
+        // Only append oldFile if it's an update (edit case)
+        if (formData.JobImagePublicId) {
+            form.append("oldFile", formData.JobImagePublicId);
+        }
+
+        try {
+            const res = await uploadJobImage(form);
+            setFormData((prev) => ({
+                ...prev,
+                JobImage: res.data.url,
+                JobImagePublicId: res.data.filename, // store new public_id
+            }));
+        } catch (err) {
+            console.error("Upload failed", err);
         }
     };
+
+
 
     const handleSubmit = async () => {
         try {
@@ -121,10 +137,12 @@ export default function JobFormModal({ job, onClose, onSuccess }) {
                     )}
 
                     <input type="file" onChange={handleFileChange} />
-                    {formData.attachment && (
-                        <a href={formData.attachment} className="text-blue-600 block mt-1" target="_blank" rel="noopener noreferrer">
-                            View Attachment
-                        </a>
+                    {formData.JobImage && (
+                        <img
+                            src={formData.JobImage}
+                            alt="Job"
+                            className="mt-3 w-32 h-32 object-cover border rounded"
+                        />
                     )}
                 </div>
                 <div className="flex justify-end space-x-2 mt-4">
