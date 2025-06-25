@@ -15,29 +15,26 @@ const jobImageStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'job_images',
-        allowed_formats: ['jpg', 'png', 'jpeg'],
+        // allowed_formats: ['jpg', 'png', 'jpeg'],
     },
 });
 const uploadJobImage = multer({ storage: jobImageStorage });
 
 
-// const companyLogoStorage = multer.diskStorage({
-//     destination: (req, file, cb) => cb(null, "uploads/companyLogo/"),
-//     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-// });
+
 const companyLogoStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'company_images',
-        allowed_formats: ['jpg', 'png', 'jpeg'],
+        // allowed_formats: ['jpg', 'png', 'jpeg'],
     },
 });
 // const uploadCompanyLogo = multer({ storage: companyLogoStorage });
-const uploadCompanyLogo = multer({ storage: jobImageStorage });
+const uploadCompanyLogo = multer({ storage: companyLogoStorage });
 
 router.post("/uploadCompanyLogo", uploadCompanyLogo.single("file"), async (req, res) => {
-    const { oldFile } = req.body;
-
+    // const { oldFile } = req.body;
+    console.log(req.body, "Company file");
     try {
         // Delete old logo from Cloudinary if exists
         if (oldFile) {
