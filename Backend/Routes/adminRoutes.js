@@ -33,7 +33,7 @@ const companyLogoStorage = new CloudinaryStorage({
 const uploadCompanyLogo = multer({ storage: companyLogoStorage });
 
 router.post("/uploadCompanyLogo", uploadCompanyLogo.single("file"), async (req, res) => {
-    // const { oldFile } = req.body;
+    const { oldFile } = req.body;
     console.log(req.body, "Company file");
     try {
         // Delete old logo from Cloudinary if exists
