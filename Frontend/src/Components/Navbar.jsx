@@ -7,6 +7,9 @@ import { logoutUser } from '../redux/authSlice';
 import NotificationModal from './NotificationModal';
 import socket from '../socket';
 import { clearNotifications, getNotigication } from '../Servises/adminApi';
+import { toast } from 'react-toastify';
+// import playNotificationSound from '../utils/playNotificationSound';
+import showBrowserNotification from '../utils/showBrowserNotification';
 
 const Navbar = ({ setIsOpen, isOpen }) => {
   const { isAuthenticated, user } = useSelector(state => state.auth);
@@ -37,37 +40,64 @@ const Navbar = ({ setIsOpen, isOpen }) => {
   };
 
   useEffect(() => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     fetchNotifications();
+
     socket.on('new_notification', (notif) => {
       setNotifications(prev => [notif, ...prev]);
+
+      // playNotificationSound();
+      showBrowserNotification(notif);
+
+      toast.info(
+        <div>
+          <p className="font-semibold">New Application</p>
+          <p className="text-sm text-gray-600">
+            {notif?.applicantName || 'An applicant'} applied for {notif?.jobTitle || 'a job'}
+          </p>
+        </div>,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     });
+
     return () => socket.off('new_notification');
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0  bg-white shadow-sm z-50 px-4 lg:px-10">
+      <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50 px-4 lg:px-10">
         <div className="max-w-screen-xl mx-auto flex justify-between items-center h-16">
-          {/* Left: Logo & Mobile Menu */}
           <div className="flex items-center gap-3">
             {user?.role === "admin" && (
               <button onClick={toggleSidebar} className="text-gray-700 md:hidden">
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             )}
-            <img src={Logo} width={80} alt="Logo" className="object-contain" />
+            <Link to={"/"}>
+              <img src={Logo} width={80} alt="Logo" className="object-contain" />
+            </Link>
           </div>
 
-          {/* Right: Nav Actions */}
           <div className="flex items-center gap-4">
-            {/* Jobs link for non-admin */}
             {user?.role !== "admin" && (
               <Link to="/jobs" className="text-gray-700 hover:text-orange-500 transition">
                 Jobs
               </Link>
             )}
 
-            {/*  Notification Bell for admin */}
             {user?.role === 'admin' && (
               <div
                 className="relative cursor-pointer"
@@ -84,7 +114,6 @@ const Navbar = ({ setIsOpen, isOpen }) => {
               </div>
             )}
 
-            {/*  Profile Icon */}
             <Link to={
               user?.role === 'admin' ? "/admin/profile"
                 : user?.role === 'recruiter' ? "/recruiter/profile"
@@ -95,7 +124,6 @@ const Navbar = ({ setIsOpen, isOpen }) => {
               </div>
             </Link>
 
-            {/*  Login / Logout */}
             {!isAuthenticated ? (
               <Link to="/login">
                 <button className="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 transition">
@@ -114,7 +142,6 @@ const Navbar = ({ setIsOpen, isOpen }) => {
         </div>
       </nav>
 
-      {/*  Notification Modal */}
       {showModal && (
         <NotificationModal
           notifications={notifications}

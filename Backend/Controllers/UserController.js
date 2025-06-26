@@ -242,6 +242,36 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+const updateUserProfile = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const userId = req.user.id;
+
+        const updates = { username, email };
+
+        // If password is provided, hash it
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updates.password = hashedPassword;
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(userId, updates, { new: true });
+
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: {
+                username: updatedUser.username,
+                email: updatedUser.email,
+                role: updatedUser.role
+            }
+        });
+    } catch (error) {
+        console.error("Update profile error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
 module.exports = {
     RegisterUser,
     login,
@@ -250,5 +280,6 @@ module.exports = {
     getUserProfile,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    updateUserProfile
 };

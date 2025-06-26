@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-    // baseURL: "http://localhost:3000/",
-    baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/",
+    baseURL: "http://localhost:3000/",
+    // baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/",
     withCredentials: true,
     headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`, // add space here
@@ -25,6 +25,7 @@ export const createUser = (data) => API.post("/auth/register", data);
 export const updateUser = (id, data) => API.put(`/auth/user/${id}`, data);
 export const deleteUser = (id) => API.delete(`/auth/user/${id}`);
 
+export const updateUserProfile = (data) => API.put(`/auth/profile`, data);
 // ---------------------- JOBS ----------------------
 
 export const createJob = (data) => API.post("/admin/createJob", data);
@@ -64,6 +65,9 @@ export const getApplications = (query = "") =>
 
 export const createApplication = (data) =>
     API.post("/admin/createApplications", data);
+
+export const ApplyJob = (data) =>
+    API.post("/aplication/apply", data);
 
 
 export const getDashboardStats = () => API.get("/admin/dashboardCount");

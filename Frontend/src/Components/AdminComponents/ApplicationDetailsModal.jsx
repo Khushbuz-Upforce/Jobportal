@@ -1,4 +1,6 @@
 const ApplicationDetailsModal = ({ application, onClose }) => {
+    console.log(application);
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm p-4">
             <div className="relative bg-white w-full max-w-lg rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in">
@@ -13,7 +15,7 @@ const ApplicationDetailsModal = ({ application, onClose }) => {
                         <div><span className="font-medium text-gray-900">Name:</span> {application.applicantName}</div>
                         <div><span className="font-medium text-gray-900">Email:</span> {application.email}</div>
                         <div><span className="font-medium text-gray-900">Phone:</span> {application.phone}</div>
-                        <div><span className="font-medium text-gray-900">Job:</span> {application.job?.title}</div>
+                        <div><span className="font-medium text-gray-900">Job:</span> {application?.jobId?.title}</div>
                         <div><span className="font-medium text-gray-900">Applied At:</span> {new Date(application.createdAt).toLocaleString()}</div>
                         <div><span className="font-medium text-gray-900">Cover Letter:</span> {application.coverLetter || "N/A"}</div>
                         {application.resume && (

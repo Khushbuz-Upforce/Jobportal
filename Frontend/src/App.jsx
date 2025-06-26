@@ -11,7 +11,11 @@ import AdminJobsPage from './Pages/Admin/Jobs/AdminJobsPage'
 import AdminCompaniesPage from './Pages/Admin/Conpanies/AdminCompaniesPage'
 import AdminUsersPage from './Pages/Admin/User/AdminUsersPage '
 import AdminApplicationsPage from './Pages/Admin/Applications/AdminApplicationsPage'
-import UserProfile from './Pages/Admin/User/UserProfile'
+import AdminProfilePage from './Pages/Admin/User/AdminProfilePage'
+import UserProfile from './Pages/User/UserProfile'
+import JobsPage from './Pages/User/JobsPage'
+import JobDetailsPage from './Components/UserComponents/JobDetailsPage'
+import MyApplications from './Pages/User/MyApplications'
 
 const App = () => {
   return (
@@ -20,8 +24,12 @@ const App = () => {
       <Routes>
 
         <Route path="/" element={<Home />} />
+
+        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Admin panal */}
         <Route path="/admin" element={
           <ProtectedRoute role="admin">
             <Dashboard />
@@ -32,9 +40,14 @@ const App = () => {
         <Route path="/admin/jobs" element={<ProtectedRoute role="admin"><AdminJobsPage /></ProtectedRoute>} />
         <Route path="/admin/company" element={<ProtectedRoute role="admin"><AdminCompaniesPage /></ProtectedRoute>} />
         <Route path="/admin/aplication" element={<ProtectedRoute role="admin"><AdminApplicationsPage /></ProtectedRoute>} />
-        <Route path="/admin/profile" element={<ProtectedRoute role="admin"><UserProfile /></ProtectedRoute>} />
-        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
+        <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfilePage /></ProtectedRoute>} />
 
+        {/* User Panal */}
+        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
+        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
+        <Route path="/jobs" element={<ProtectedRoute role="user"><JobsPage /></ProtectedRoute>} />
+        <Route path="/jobs/:jobId" element={<ProtectedRoute role="user"><JobDetailsPage /></ProtectedRoute>} />
+        <Route path="/application" element={<ProtectedRoute role="user"><MyApplications /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )

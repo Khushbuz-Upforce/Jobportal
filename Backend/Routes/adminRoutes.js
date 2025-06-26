@@ -84,13 +84,9 @@ router.post("/uploadJobImage", uploadJobImage.single("file"), async (req, res) =
 
 router.post("/createJob", verifyToken, isAdmin, createJob);
 
-router.get("/getAllJobs", verifyToken, isAdmin, getAllJobs);
+router.get("/getAllJobs", verifyToken, getAllJobs);
 router.put("/updateJob/:id", verifyToken, isAdmin, updateJob);
 router.delete("/deleteJob/:id", verifyToken, isAdmin, deleteJob);
-
-// // Applications
-// router.get("/applications", getAllApplications);
-// router.get("/applications/:id", getApplicationById);
 
 // Companies
 router.post("/createCompany", verifyToken, isAdmin, createCompany);

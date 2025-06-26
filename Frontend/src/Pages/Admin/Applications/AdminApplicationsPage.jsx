@@ -26,19 +26,6 @@ const AdminApplicationsPage = () => {
 
     }, [search, page]);
 
-    // Listen to real-time updates from Socket.IO
-    useEffect(() => {
-        socket.on("new-application", (newApp) => {
-            toast.success("New application received");
-
-            // Only update if on the first page
-            if (page === 1) {
-                setApplications(prev => [newApp, ...prev.slice(0, 9)]); // Keep max 10
-            }
-        });
-
-        return () => socket.off("new-application");
-    }, [page]);
 
     return (
         <AdminSidebarLayout>
