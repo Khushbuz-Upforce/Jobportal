@@ -28,6 +28,7 @@ const UserModal = ({
             try {
                 if (isEditMode) {
                     console.log(values, "Edit values");
+                    console.log(editUserId, "Edit ID");
 
                     await updateUser(editUserId, values);
                 } else {

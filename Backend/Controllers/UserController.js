@@ -214,9 +214,13 @@ const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const { username, email, password, role } = req.body;
-        console.log(req.body, "pdate");
 
+        const updates = { username, email, role };
 
+        // If password is provided, include it
+        if (password) {
+            updates.password = password;
+        }
 
         const user = await UserModel.findByIdAndUpdate(id, updates, { new: true });
         res.status(200).json({ success: true, user });
@@ -225,6 +229,7 @@ const updateUser = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 // Delete User
 const deleteUser = async (req, res) => {
