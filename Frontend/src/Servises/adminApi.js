@@ -26,6 +26,7 @@ export const updateUser = (id, data) => API.put(`/auth/user/${id}`, data);
 export const deleteUser = (id) => API.delete(`/auth/user/${id}`);
 
 export const updateUserProfile = (data) => API.put(`/auth/profile`, data);
+
 // ---------------------- JOBS ----------------------
 
 export const createJob = (data) => API.post("/admin/createJob", data);

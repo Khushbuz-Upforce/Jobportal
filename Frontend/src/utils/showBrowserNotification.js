@@ -6,7 +6,6 @@ const showBrowserNotification = (notif) => {
             body: `${notif?.applicantName || 'Someone'} applied for ${notif?.jobTitle || 'a job'}`,
             icon: '/logo192.png' // fallback icon (place this in public folder)
         });
-
         notification.onclick = () => {
             window.focus();
         };
