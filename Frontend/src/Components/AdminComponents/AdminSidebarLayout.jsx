@@ -22,7 +22,6 @@ const AdminSidebarLayout = ({ children }) => {
         { to: "/admin/jobs", label: "Manage Jobs", icon: <BriefcaseBusiness className="w-5 h-5" /> },
         { to: "/admin/company", label: "Manage Company", icon: <Building2 className="w-5 h-5" /> },
         { to: "/admin/aplication", label: "Applications", icon: <FileUser className="w-5 h-5" /> },
-        { to: "/admin/profile", label: "Admin Profile", icon: <Contact className="w-5 h-5" /> },
     ];
 
     return (

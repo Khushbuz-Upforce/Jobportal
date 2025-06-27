@@ -15,6 +15,12 @@ const Navbar = ({ setIsOpen, isOpen }) => {
   const { isAuthenticated, user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+
+  const homePath = user?.role === 'admin' ? '/admin' : '/';
+
   const [showModal, setShowModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
@@ -84,10 +90,26 @@ const Navbar = ({ setIsOpen, isOpen }) => {
 
     return () => socket.off('new_notification');
   }, [isAuthenticated]);
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
 
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setIsVisible(false); // scrolling down
+      } else {
+        setIsVisible(true); // scrolling up
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50 px-4 lg:px-10">
+      <nav className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-10 transition-all duration-300 backdrop-blur-lg bg-white/30 border-b border-white/20 shadow-md ${isVisible ? 'translate-y-0' : 'translate-y-0'
+        }`}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center h-16">
           <div className="flex items-center gap-3">
             {user?.role === "admin" && (
@@ -95,7 +117,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             )}
-            <Link to={"/"}>
+            <Link to={homePath}>
               <img src={Logo} width={80} alt="Logo" className="object-contain" />
             </Link>
           </div>
@@ -104,11 +126,6 @@ const Navbar = ({ setIsOpen, isOpen }) => {
             {user?.role !== "admin" && (
               <Link to="/jobs" className="text-gray-700 hover:text-orange-500 transition">
                 Jobs
-              </Link>
-            )}
-            {isAuthenticated && user?.role !== "user" && (
-              <Link to="/admin" className="text-gray-700 hover:text-orange-500 transition">
-                Dashboard
               </Link>
             )}
 

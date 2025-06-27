@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getJobs, deleteJob } from "../../../Servises/adminApi";
+import { getJobs, deleteJob, getJobCategories } from "../../../Servises/adminApi";
 import JobTable from "../../../Components/AdminComponents/JobTable";
 import JobFormModal from "../../../Components/AdminComponents/JobFormModal";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
@@ -20,6 +20,7 @@ const AdminJobsPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const [categoryList, setCategoryList] = useState([]);
     const debouncedSearch = useDebounce(search);
     const debouncedLocation = useDebounce(location);
 
@@ -49,6 +50,21 @@ const AdminJobsPage = () => {
     useEffect(() => {
         fetchJobs();
     }, [debouncedSearch, debouncedLocation, category, status, page]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await getJobCategories();
+                setCategoryList(res.data.categories);
+                console.log(res.data.categories, "categoisd");
+
+            } catch (err) {
+                console.error("Failed to fetch categories");
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleDelete = async (id) => {
         await deleteJob(id);
@@ -82,10 +98,11 @@ const AdminJobsPage = () => {
                         className="w-full border border-gray-300 p-1 px-2 text-[12px] rounded md:text-sm"
                     >
                         <option value="">All Categories</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Design">Design</option>
-                        <option value="Consultant">Consultant</option>
-                        <option value="Marketing">Marketing</option>
+                        {categoryList.map((cat, idx) => (
+                            <option key={idx} value={cat}>
+                                {cat}
+                            </option>
+                        ))}
                     </select>
                     <select
                         value={status}

@@ -12,7 +12,7 @@ const statusColors = {
 };
 
 const MyApplications = () => {
-    const [applications, setApplications] = useState([]);
+    const [applications, setApplications] = useState([1, 2, 3]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,7 +41,7 @@ const MyApplications = () => {
 
                 {loading ? (
                     <div className="space-y-4">
-                        {[1, 2, 3].map((i) => (
+                        {applications.map((i) => (
                             <div key={i} className="animate-pulse p-4 border rounded bg-white shadow">
                                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                                 <div className="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>

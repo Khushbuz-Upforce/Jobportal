@@ -45,6 +45,11 @@ export const uploadJobImage = (formData) =>
         headers: { "Content-Type": "multipart/form-data" },
     });
 
+
+export const getJobCategories = () => API.get("/admin/job-categories");
+export const getCompanyIndustry = () => API.get("/admin/job-industry ");
+
+
 // ---------------------- COMPANIES ----------------------
 
 export const createCompany = (data) => API.post("/admin/createCompany", data);

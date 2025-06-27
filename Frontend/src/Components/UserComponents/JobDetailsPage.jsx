@@ -65,24 +65,24 @@ const JobDetailsPage = () => {
                     {/* Job Details */}
                     <div className="grid md:grid-cols-2 gap-4 text-gray-700 mb-8">
                         <div className="flex items-center gap-2">
-                            <Briefcase className="text-yellow-500" size={18} />
+                            <Briefcase className="text-yellow" size={18} />
                             <span>{job.category}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <MapPin className="text-yellow-500" size={18} />
+                            <MapPin className="text-yellow" size={18} />
                             <span>{job.location}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <CalendarDays className="text-yellow-500" size={18} />
+                            <CalendarDays className="text-yellow" size={18} />
                             <span>{new Date(job.createdAt).toLocaleDateString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <FileText className="text-yellow-500" size={18} />
+                            <FileText className="text-yellow" size={18} />
                             <span>₹{job.salary}</span>
                         </div>
                         {job.attachment && (
                             <div className="flex items-center gap-2">
-                                <FileText className="text-yellow-500" size={18} />
+                                <FileText className="text-yellow" size={18} />
                                 <a
                                     href={job.attachment}
                                     target="_blank"
@@ -120,11 +120,11 @@ const JobDetailsPage = () => {
 
                             <div className="flex flex-col gap-2 text-sm text-gray-600">
                                 <div className="flex items-center gap-2">
-                                    <Mail size={16} className="text-yellow-500" />
+                                    <Mail size={16} className="text-yellow" />
                                     <span>{job.companyId.email}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Globe size={16} className="text-yellow-500" />
+                                    <Globe size={16} className="text-yellow" />
                                     <a
                                         href={job.companyId.website}
                                         target="_blank"
@@ -142,7 +142,7 @@ const JobDetailsPage = () => {
                     <div className="mt-10 text-center">
                         <button
                             onClick={() => setShowApplyModal(true)}
-                            className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition"
+                            className="bg-yellow text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition"
                         >
                             Apply Now
                         </button>

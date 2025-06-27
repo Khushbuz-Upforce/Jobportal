@@ -10,6 +10,7 @@ import {
 
 const JobFormModal = ({ job, onClose, onSuccess }) => {
     const [companies, setCompanies] = useState([]);
+
     const [imagePreview, setImagePreview] = useState(job?.JobImage || "");
 
     useEffect(() => {
@@ -17,6 +18,8 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
             try {
                 const res = await getCompanies();
                 setCompanies(res.data);
+                console.log(res.data, "company data");
+
             } catch (err) {
                 console.error("Failed to fetch companies", err);
             }
@@ -129,11 +132,11 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                                 onChange={formik.handleChange}
                             >
                                 <option value="">Select Category</option>
-                                <option value="Engineering">Engineering</option>
-                                <option value="Design">Design</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Consultant">Consultant</option>
-                                <option value="Sales">Sales</option>
+                                {companies.map((c) => (
+                                    <option key={c._id} value={c.industry}>
+                                        {c.industry}
+                                    </option>
+                                ))}
                             </select>
                             {formik.touched.category && formik.errors.category && (
                                 <div className="text-red-500 text-sm">{formik.errors.category}</div>

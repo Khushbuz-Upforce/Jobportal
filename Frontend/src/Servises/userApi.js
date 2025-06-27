@@ -10,6 +10,9 @@ const API = axios.create({
 });
 
 
+// ---------------------- User ----------------------
+export const getUser = async () =>
+    API.get("/auth/getUserProfile")
 // ---------------------- APPLICATIONS ----------------------
 export const ApplyJob = (data) =>
     API.post("/application/apply", data, {

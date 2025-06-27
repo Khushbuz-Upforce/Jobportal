@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { ApplyJob } from "../../Servises/userApi"; // Your centralized API call
+import { ApplyJob, getUser } from "../../Servises/userApi"; // Your centralized API call
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -61,12 +61,15 @@ const ApplyFormModal = ({ jobId, onClose }) => {
         let isMounted = true;
         const fetchUser = async () => {
             try {
-                const res = await axios.get("/api/user/profile");
+                const res = await getUser();
+                console.log(res.data, "user data");
+
                 if (isMounted) {
                     formik.setValues((prev) => ({
                         ...prev,
-                        applicantName: res.data.name || "",
+                        applicantName: res.data.username || "",
                         email: res.data.email || "",
+
                     }));
                 }
             } catch (err) {
@@ -175,7 +178,7 @@ const ApplyFormModal = ({ jobId, onClose }) => {
                     <button
                         type="submit"
                         disabled={formik.isSubmitting || uploading}
-                        className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-2 px-4 rounded"
+                        className="w-full bg-yellow hover:bg-yellow-500 text-gray-900 font-semibold py-2 px-4 rounded"
                     >
                         {formik.isSubmitting || uploading ? "Submitting..." : "Submit Application"}
                     </button>
