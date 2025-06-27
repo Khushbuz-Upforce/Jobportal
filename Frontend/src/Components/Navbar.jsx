@@ -23,6 +23,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
 
   const fetchNotifications = async () => {
     try {
+      if (!isAuthenticated) return;
 
       // Check if user is admin
       if (user?.role !== 'admin') return;
