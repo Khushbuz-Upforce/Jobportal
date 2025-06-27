@@ -77,11 +77,12 @@ const MyApplications = () => {
                                 </p>
                                 <a
                                     href={app.resume}
+                                    download="resume.pdf"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 mt-2 text-blue-600 hover:underline text-sm"
                                 >
-                                    <FaDownload className="text-sm" /> View Resume
+                                    <FaDownload className="text-sm" /> Download Resume
                                 </a>
 
                             </div>

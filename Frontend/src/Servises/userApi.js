@@ -1,18 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:3000/",
+    // baseURL: "http://localhost:3000/",
+    baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:3000/",
     withCredentials: true,
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // add space here
+    },
 });
 
-// Add token automatically to every request
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
 
 // ---------------------- APPLICATIONS ----------------------
 export const ApplyJob = (data) =>

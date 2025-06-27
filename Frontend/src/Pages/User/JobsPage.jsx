@@ -41,12 +41,12 @@ const JobsPage = () => {
                                     {job.description}
                                 </p>
                                 <div className="flex items-center text-gray-500 text-sm mb-4">
-                                    <MapPin size={16} className="mr-1 text-yellow-500" />
+                                    <MapPin size={16} className="mr-1 text-yellow" />
                                     {job.location}
                                 </div>
                                 <button
                                     onClick={() => navigate(`/jobs/${job._id}`)}
-                                    className="text-sm px-4 py-2 bg-yellow-400 text-gray-900 font-medium rounded hover:bg-yellow-500 transition"
+                                    className="text-sm px-4 py-2 bg-yellow text-gray-900 font-medium rounded hover:bg-yellow-400 transition"
                                 >
                                     View Details
                                 </button>

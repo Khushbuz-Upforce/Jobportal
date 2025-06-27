@@ -23,6 +23,10 @@ const Navbar = ({ setIsOpen, isOpen }) => {
 
   const fetchNotifications = async () => {
     try {
+
+      // Check if user is admin
+      if (user?.role !== 'admin') return;
+
       const res = await getNotigication();
       setNotifications(res.data.notifications || []);
     } catch (err) {
@@ -48,10 +52,14 @@ const Navbar = ({ setIsOpen, isOpen }) => {
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    // Check if user is admin
+    if (user?.role !== 'admin') return;
+
     fetchNotifications();
 
     socket.on('new_notification', (notif) => {
       setNotifications(prev => [notif, ...prev]);
+      // console.log(notif, "notification");
 
       // playNotificationSound();
       showBrowserNotification(notif);
@@ -95,6 +103,11 @@ const Navbar = ({ setIsOpen, isOpen }) => {
             {user?.role !== "admin" && (
               <Link to="/jobs" className="text-gray-700 hover:text-orange-500 transition">
                 Jobs
+              </Link>
+            )}
+            {isAuthenticated && user?.role !== "user" && (
+              <Link to="/admin" className="text-gray-700 hover:text-orange-500 transition">
+                Dashboard
               </Link>
             )}
 

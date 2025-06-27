@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ApplyJob } from "../../Servises/userApi"; // Your centralized API call
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ApplyFormModal = ({ jobId, onClose }) => {
     const navigate = useNavigate();
@@ -39,12 +40,14 @@ const ApplyFormModal = ({ jobId, onClose }) => {
                 formData.append("resume", values.resume);
                 formData.append("jobId", jobId);
 
-                await ApplyJob(formData); // Use updated ApplyJob
+                const res = await ApplyJob(formData); // Use updated ApplyJob
+                toast.success(res.data.message)
+                // console.log(res);
 
                 navigate("/application");
             } catch (err) {
                 console.error("Submission failed:", err);
-                alert("Application failed. Please try again.");
+                toast(err.response.data.message || "Application failed. Please try again.")
             } finally {
                 setUploading(false);
                 setSubmitting(false);
