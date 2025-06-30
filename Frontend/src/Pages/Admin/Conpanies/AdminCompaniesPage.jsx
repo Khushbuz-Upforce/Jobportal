@@ -7,6 +7,7 @@ import {
 import EditCompanyModal from "../../../Components/AdminComponents/EditCompanyModal";
 import CreateCompanyModal from "../../../Components/AdminComponents/CreateCompanyModal";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
+import { toast } from "react-toastify";
 
 const AdminCompaniesPage = () => {
     const [companies, setCompanies] = useState([]);
@@ -27,6 +28,7 @@ const AdminCompaniesPage = () => {
             setCompanies(res.data);
         } catch (error) {
             console.error("Error fetching companies:", error);
+            toast.error(error.response.data.message)
         }
     };
 
@@ -68,6 +70,7 @@ const AdminCompaniesPage = () => {
             }));
         } catch (error) {
             console.error("File upload failed:", error);
+            toast.error(error.response.data.message)
         }
     };
 
@@ -80,6 +83,7 @@ const AdminCompaniesPage = () => {
             fetchCompanies();
         } catch (error) {
             console.error("Error updating company:", error);
+            toast.error(error.response.data.message)
         }
     };
 

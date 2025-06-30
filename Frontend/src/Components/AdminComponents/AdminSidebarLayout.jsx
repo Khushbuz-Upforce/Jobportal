@@ -27,13 +27,13 @@ const AdminSidebarLayout = ({ children }) => {
     return (
         <>
             <Navbar setIsOpen={setIsOpen} isOpen={isOpen} />
-            <div className="min-h-screen flex flex-col md:flex-row pt-16 bg-gray-100">
-                {/* Sidebar */}
+            <div className="flex bg-gray-100">
+                {/* Sidebar - Fixed on the left */}
                 <aside
-                    className={`min-h-screen z-40 fixed md:relative top-0 left-0  w-64 md:w-60 bg-white/90 backdrop-blur-md shadow-md border-r border-gray-200 transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+                    className={`fixed top-16 left-0 w-100 h-[calc(100vh-4rem)] bg-white shadow-md z-40 transition-transform duration-300 ease-in-out
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
                 >
-                    <div className="p-4 pt-20 md:pt-6 space-y-4">
+                    <div className="overflow-y-auto h-full px-4 py-6 scrollbar-thin scrollbar-thumb-gray-300">
                         <nav className="space-y-1">
                             {links.map((link) => {
                                 const isActive = location.pathname === link.to;
@@ -57,7 +57,7 @@ const AdminSidebarLayout = ({ children }) => {
                 </aside>
 
                 {/* Main content */}
-                <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+                <main className="flex-1 md:ml-56 pt-20 p-4 md:p-8 md:pt-20 overflow-y-auto min-h-screen">
                     {children}
                 </main>
             </div>

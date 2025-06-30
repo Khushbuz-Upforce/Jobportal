@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createCompany, uploadCompanyLogo } from "../../Servises/adminApi";
+import { toast } from "react-toastify";
 
 const CreateCompanyModal = ({ onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ const CreateCompanyModal = ({ onClose, onSuccess }) => {
             onClose();
         } catch (err) {
             console.error("Failed to create company:", err);
+            toast.error(err.response.data.message)
         }
     };
 

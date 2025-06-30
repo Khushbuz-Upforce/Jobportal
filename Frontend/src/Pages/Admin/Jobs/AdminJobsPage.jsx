@@ -5,6 +5,7 @@ import JobFormModal from "../../../Components/AdminComponents/JobFormModal";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import JobDetailsModal from "../../../Components/AdminComponents/JobDetailsModal ";
 import useDebounce from "../../../hooks/useDebounce";
+import { toast } from "react-toastify";
 
 const AdminJobsPage = () => {
     const [jobs, setJobs] = useState([]);
@@ -42,6 +43,7 @@ const AdminJobsPage = () => {
             setTotalPages(res.data.totalPages);
         } catch (err) {
             setError("Failed to load jobs.");
+            toast.error(err.response.data.message)
         } finally {
             setLoading(false);
         }
@@ -60,6 +62,7 @@ const AdminJobsPage = () => {
 
             } catch (err) {
                 console.error("Failed to fetch categories");
+                toast.error(err.response.data.message)
             }
         };
 

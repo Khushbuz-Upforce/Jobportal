@@ -6,11 +6,13 @@ import {
     createJob,
     getCompanies,
     uploadJobImage,
+    getJobCategories,
 } from "../../Servises/adminApi";
+import { toast } from "react-toastify";
 
 const JobFormModal = ({ job, onClose, onSuccess }) => {
     const [companies, setCompanies] = useState([]);
-
+    const [categoryList, setCategoryList] = useState([]);
     const [imagePreview, setImagePreview] = useState(job?.JobImage || "");
 
     useEffect(() => {
@@ -24,6 +26,18 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                 console.error("Failed to fetch companies", err);
             }
         };
+        const fetchCategories = async () => {
+            try {
+                const res = await getJobCategories();
+                setCategoryList(res.data.categories);
+                console.log(res.data.categories, "categoisd");
+
+            } catch (err) {
+                console.error("Failed to fetch categories");
+                toast.error(err.response.data.message)
+            }
+        };
+        fetchCategories()
         fetchCompanies();
     }, []);
 
@@ -58,6 +72,7 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                 onClose();
             } catch (err) {
                 console.error("Failed to submit job:", err);
+                toast.error(err.response.data.message)
             }
         },
     });
@@ -79,6 +94,7 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
             setImagePreview(res.data.url);
         } catch (err) {
             console.error("Upload failed", err);
+            toast.error(err.response.data.message)
         }
     };
 
@@ -132,9 +148,9 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                                 onChange={formik.handleChange}
                             >
                                 <option value="">Select Category</option>
-                                {companies.map((c) => (
-                                    <option key={c._id} value={c.industry}>
-                                        {c.industry}
+                                {categoryList.map((cat, idx) => (
+                                    <option key={idx} value={cat}>
+                                        {cat}
                                     </option>
                                 ))}
                             </select>

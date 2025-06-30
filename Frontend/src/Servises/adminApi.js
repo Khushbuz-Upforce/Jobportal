@@ -75,6 +75,9 @@ export const createApplication = (data) =>
 export const ApplyJob = (data) =>
     API.post("/aplication/apply", data);
 
+export const updateApplicationStatus = async (applicationId, status) => {
+    API.put(`/admin/updateStatus/${applicationId}/status`, { status });
+};
 
 export const getDashboardStats = () => API.get("/admin/dashboardCount");
 export const getNotigication = () => API.get('/admin/getNotigication');

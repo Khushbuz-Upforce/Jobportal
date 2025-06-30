@@ -56,6 +56,7 @@ const CompanyModal = ({ mode = "create", initialData = {}, onClose, onSuccess })
             } catch (err) {
                 console.error(err);
                 setApiError("Something went wrong. Please try again.");
+                toast.error(err.response.data.message)
             } finally {
                 setSubmitting(false);
             }

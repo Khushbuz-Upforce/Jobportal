@@ -2,6 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createUser, updateUser } from "../../Servises/adminApi";
+import { toast } from "react-toastify";
 
 const UserModal = ({
     isOpen,
@@ -27,17 +28,18 @@ const UserModal = ({
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 if (isEditMode) {
-                    console.log(values, "Edit values");
-                    console.log(editUserId, "Edit ID");
+                    // console.log(values, "Edit values");
+                    // console.log(editUserId, "Edit ID");
 
                     await updateUser(editUserId, values);
                 } else {
-                    console.log(values, "Create values");
+                    // console.log(values, "Create values");
                     await createUser(values);
                 }
                 onSuccess();
             } catch (error) {
                 console.error("User save failed", error);
+                toast.error(error.response.data.message)
             } finally {
                 setSubmitting(false);
             }

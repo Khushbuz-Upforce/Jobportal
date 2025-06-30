@@ -108,7 +108,7 @@ const Navbar = ({ setIsOpen, isOpen }) => {
   }, [lastScrollY]);
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-10 transition-all duration-300 backdrop-blur-lg bg-white/30 border-b border-white/20 shadow-md ${isVisible ? 'translate-y-0' : 'translate-y-0'
+      <nav className={`fixed top-0 left-0 right-0 z-50 px-4 lg:px-10 h-50 transition-all duration-300 backdrop-blur-lg bg-white/30 border-b border-white/20 shadow-md ${isVisible ? 'translate-y-0' : 'translate-y-0'
         }`}>
         <div className="max-w-screen-xl mx-auto flex justify-between items-center h-16">
           <div className="flex items-center gap-3">

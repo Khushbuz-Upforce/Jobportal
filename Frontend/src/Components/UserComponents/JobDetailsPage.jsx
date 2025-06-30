@@ -25,6 +25,7 @@ const JobDetailsPage = () => {
                 setJob(foundJob);
             } catch (err) {
                 console.error("Error fetching job details:", err);
+                toast.error(err.response.data.message)
             }
         };
 

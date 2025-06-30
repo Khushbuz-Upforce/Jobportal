@@ -48,6 +48,7 @@ const App = () => {
         <Route path="/jobs" element={<ProtectedRoute role="user"><JobsPage /></ProtectedRoute>} />
         <Route path="/jobs/:jobId" element={<ProtectedRoute role="user"><JobDetailsPage /></ProtectedRoute>} />
         <Route path="/application" element={<ProtectedRoute role="user"><MyApplications /></ProtectedRoute>} />
+
       </Routes>
     </BrowserRouter>
   )

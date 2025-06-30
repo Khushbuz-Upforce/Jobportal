@@ -74,6 +74,7 @@ const ApplyFormModal = ({ jobId, onClose }) => {
                 }
             } catch (err) {
                 console.error("Failed to fetch user profile:", err);
+                toast.error(err.response.data.message)
             }
         };
         fetchUser();
