@@ -33,7 +33,7 @@ const AdminSidebarLayout = ({ children }) => {
                     className={`fixed top-16 left-0 w-100 h-[calc(100vh-4rem)] bg-white shadow-md z-40 transition-transform duration-300 ease-in-out
       ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
                 >
-                    <div className="overflow-y-auto h-full px-4 py-6 scrollbar-thin scrollbar-thumb-gray-300">
+                    <div className="overflow-y-auto h-full px-4 py-6">
                         <nav className="space-y-1">
                             {links.map((link) => {
                                 const isActive = location.pathname === link.to;
