@@ -25,6 +25,15 @@ const EditCompanyModal = ({ formData, setFormData, onSave, onClose, onFileChange
                         }
                     />
                     <input
+                        type="industry"
+                        placeholder="Industry"
+                        className="border border-gray-300 rounded px-4 py-2"
+                        value={formData.industry}
+                        onChange={(e) =>
+                            setFormData({ ...formData, industry: e.target.value })
+                        }
+                    />
+                    <input
                         type="url"
                         placeholder="Website URL"
                         className="border border-gray-300 rounded px-4 py-2"

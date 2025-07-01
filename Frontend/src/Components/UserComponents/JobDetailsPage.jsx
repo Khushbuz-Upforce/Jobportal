@@ -109,7 +109,7 @@ const JobDetailsPage = () => {
                                 <img
                                     src={job.companyId.logo}
                                     alt="Company Logo"
-                                    className="w-16 h-16 rounded-full border border-gray-300 object-cover"
+                                    className="w-16 h-16 rounded-full border border-gray-300 object-contain"
                                 />
                                 <div>
                                     <h2 className="text-xl font-bold text-gray-800">

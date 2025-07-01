@@ -18,6 +18,7 @@ const AdminCompaniesPage = () => {
         _id: "",
         name: "",
         email: "",
+        industry: "",
         website: "",
         logo: "",
     });
@@ -42,6 +43,7 @@ const AdminCompaniesPage = () => {
             _id: company._id,
             name: company.name || "",
             email: company.email || "",
+            industry: company.industry || "",
             website: company.website || "",
             logo: company.logo || "",
         });
@@ -109,7 +111,7 @@ const AdminCompaniesPage = () => {
                     <table className="min-w-full divide-y divide-gray-200 text-sm">
                         <thead className="bg-gray-200 text-gray-700 text-xs uppercase tracking-wide">
                             <tr>
-                                <th className="px-5 py-3 text-left">#</th>
+                                <th className="px-5 py-3 text-left">Id</th>
                                 <th className="px-5 py-3 text-left">Logo</th>
                                 <th className="px-5 py-3 text-left">Name</th>
                                 <th className="px-5 py-3 text-left">Email</th>
@@ -126,7 +128,7 @@ const AdminCompaniesPage = () => {
                                         <img
                                             src={company.logo}
                                             alt="Company Logo"
-                                            className="w-10 h-10 object-cover rounded-full border"
+                                            className="w-10 h-10 object-contain rounded-full border"
                                         />
                                     </td>
                                     <td className="px-5 py-3">{company.name}</td>

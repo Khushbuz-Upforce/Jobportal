@@ -1,57 +1,58 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Login from './Pages/Auth/Login'
-import Register from './Pages/Auth/Register'
-import { Dashboard } from './Pages/Admin/Dashboard'
-import Home from './Pages/Home'
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ProtectedRoute from './ProtectedRoute'
-import AdminJobsPage from './Pages/Admin/Jobs/AdminJobsPage'
-import AdminCompaniesPage from './Pages/Admin/Conpanies/AdminCompaniesPage'
-import AdminUsersPage from './Pages/Admin/User/AdminUsersPage '
-import AdminApplicationsPage from './Pages/Admin/Applications/AdminApplicationsPage'
-import AdminProfilePage from './Pages/Admin/User/AdminProfilePage'
-import UserProfile from './Pages/User/UserProfile'
-import JobsPage from './Pages/User/JobsPage'
-import JobDetailsPage from './Components/UserComponents/JobDetailsPage'
-import MyApplications from './Pages/User/MyApplications'
+import LoadingSpinner from './Components/LoadingSpinner';
+
+// Correct lazy-loaded imports
+const Home = lazy(() => import('./Pages/Home'));
+const Login = lazy(() => import('./Pages/Auth/Login'));
+const Register = lazy(() => import('./Pages/Auth/Register'));
+
+const Dashboard = lazy(() => import('./Pages/Admin/Dashboard'));
+const AdminJobsPage = lazy(() => import('./Pages/Admin/Jobs/AdminJobsPage'));
+const AdminCompaniesPage = lazy(() => import('./Pages/Admin/Conpanies/AdminCompaniesPage'));
+const AdminUsersPage = lazy(() => import('./Pages/Admin/User/AdminUsersPage'));
+const AdminApplicationsPage = lazy(() => import('./Pages/Admin/Applications/AdminApplicationsPage'));
+const AdminProfilePage = lazy(() => import('./Pages/Admin/User/AdminProfilePage'));
+
+const UserProfile = lazy(() => import('./Pages/User/UserProfile'));
+const JobsPage = lazy(() => import('./Pages/User/JobsPage'));
+const JobDetailsPage = lazy(() => import('./Components/UserComponents/JobDetailsPage'));
+const MyApplications = lazy(() => import('./Pages/User/MyApplications'));
 
 const App = () => {
   return (
     <BrowserRouter>
       <ToastContainer position="top-right" autoClose={3000} />
-      <Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
 
-        <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
 
-        {/* Auth */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+          {/* Auth */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Admin panal */}
-        <Route path="/admin" element={
-          <ProtectedRoute role="admin">
-            <Dashboard />
-          </ProtectedRoute>
-        } />
+          {/* Admin Panel */}
+          <Route path="/admin" element={<ProtectedRoute role="admin"><Dashboard /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute role="admin"><AdminUsersPage /></ProtectedRoute>} />
+          <Route path="/admin/jobs" element={<ProtectedRoute role="admin"><AdminJobsPage /></ProtectedRoute>} />
+          <Route path="/admin/company" element={<ProtectedRoute role="admin"><AdminCompaniesPage /></ProtectedRoute>} />
+          <Route path="/admin/aplication" element={<ProtectedRoute role="admin"><AdminApplicationsPage /></ProtectedRoute>} />
+          <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfilePage /></ProtectedRoute>} />
 
-        <Route path="/admin/users" element={<ProtectedRoute role="admin"><AdminUsersPage /></ProtectedRoute>} />
-        <Route path="/admin/jobs" element={<ProtectedRoute role="admin"><AdminJobsPage /></ProtectedRoute>} />
-        <Route path="/admin/company" element={<ProtectedRoute role="admin"><AdminCompaniesPage /></ProtectedRoute>} />
-        <Route path="/admin/aplication" element={<ProtectedRoute role="admin"><AdminApplicationsPage /></ProtectedRoute>} />
-        <Route path="/admin/profile" element={<ProtectedRoute role="admin"><AdminProfilePage /></ProtectedRoute>} />
+          {/* User Panel */}
+          <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
+          <Route path="/jobs" element={<ProtectedRoute role="user"><JobsPage /></ProtectedRoute>} />
+          <Route path="/jobs/:jobId" element={<ProtectedRoute role="user"><JobDetailsPage /></ProtectedRoute>} />
+          <Route path="/application" element={<ProtectedRoute role="user"><MyApplications /></ProtectedRoute>} />
 
-        {/* User Panal */}
-        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
-        <Route path="/user/profile" element={<ProtectedRoute role="user"><UserProfile /></ProtectedRoute>} />
-        <Route path="/jobs" element={<ProtectedRoute role="user"><JobsPage /></ProtectedRoute>} />
-        <Route path="/jobs/:jobId" element={<ProtectedRoute role="user"><JobDetailsPage /></ProtectedRoute>} />
-        <Route path="/application" element={<ProtectedRoute role="user"><MyApplications /></ProtectedRoute>} />
-
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;

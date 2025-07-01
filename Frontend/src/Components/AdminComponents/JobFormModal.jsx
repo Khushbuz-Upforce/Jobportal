@@ -7,6 +7,7 @@ import {
     getCompanies,
     uploadJobImage,
     getJobCategories,
+    getCompanyIndustry,
 } from "../../Servises/adminApi";
 import { toast } from "react-toastify";
 
@@ -28,9 +29,9 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
         };
         const fetchCategories = async () => {
             try {
-                const res = await getJobCategories();
-                setCategoryList(res.data.categories);
-                console.log(res.data.categories, "categoisd");
+                const res = await getCompanyIndustry();
+                setCategoryList(res.data.industry);
+                console.log(res.data.industry, "categoisd");
 
             } catch (err) {
                 console.error("Failed to fetch categories");
@@ -148,9 +149,9 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                                 onChange={formik.handleChange}
                             >
                                 <option value="">Select Category</option>
-                                {categoryList.map((cat, idx) => (
-                                    <option key={idx} value={cat}>
-                                        {cat}
+                                {categoryList.map((c, i) => (
+                                    <option key={i} value={c}>
+                                        {c}
                                     </option>
                                 ))}
                             </select>

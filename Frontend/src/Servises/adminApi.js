@@ -47,7 +47,7 @@ export const uploadJobImage = (formData) =>
 
 
 export const getJobCategories = () => API.get("/admin/job-categories");
-export const getCompanyIndustry = () => API.get("/admin/job-industry ");
+export const getCompanyIndustry = () => API.get("/admin/company-industry");
 
 
 // ---------------------- COMPANIES ----------------------

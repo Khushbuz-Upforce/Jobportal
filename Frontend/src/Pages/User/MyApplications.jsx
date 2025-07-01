@@ -5,8 +5,10 @@ import Navbar from "../../Components/Navbar";
 
 const statusColors = {
     Pending: "bg-yellow-100 text-yellow-800",
-    Reviewed: "bg-blue-100 text-blue-800",
-    Shortlisted: "bg-purple-100 text-purple-800",
+    ScreeningRound: "bg-blue-100 text-blue-800",
+    TechnicalRound: "bg-blue-100 text-blue-800",
+    VirtualRound: "bg-blue-100 text-blue-800",
+    Selected: "bg-purple-100 text-purple-800",
     Rejected: "bg-red-100 text-red-800",
     Hired: "bg-green-100 text-green-800",
 };
@@ -63,7 +65,7 @@ const MyApplications = () => {
                                         {app.jobId?.title || "Job Title"}
                                     </h3>
                                     <span
-                                        className={`px-2 py-1 text-sm rounded-full font-medium ${statusColors[app.status] || "bg-gray-100 text-gray-800"
+                                        className={`px-2 py-1 text-sm rounded-full font-medium ${statusColors[app.status] || "bg-blue-100 text-gray-800"
                                             }`}
                                     >
                                         {app.status}

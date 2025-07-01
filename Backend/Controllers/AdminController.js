@@ -3,6 +3,7 @@ const Application = require("../Models/ApplicationModel");
 const Company = require("../Models/CompanyModel");
 const UserModel = require("../Models/UserModel");
 const Notification = require('../Models/NotificationModel.js'); // ✅ Import Notification model
+
 const getNotigication = async (req, res) => {
     try {
         const notifications = await Notification.find().sort({ createdAt: -1 }).limit(50);
@@ -306,9 +307,9 @@ const getDashboard = async (req, res) => {
 const getCompanyIndustry = async (req, res) => {
     try {
         const industry = await Company.distinct("industry");
-        console.log(industry, "job cat");
+        // console.log(industry, "company cat");
 
-        res.status(200).json({ industry });
+        return res.status(200).json({ industry });
     } catch (error) {
         console.error("Error fetching job categories:", error);
         res.status(500).json({ message: "Failed to fetch categories" });
@@ -317,7 +318,7 @@ const getCompanyIndustry = async (req, res) => {
 const getJobCategories = async (req, res) => {
     try {
         const categories = await Job.distinct("category");
-        console.log(categories, "job cat");
+        // console.log(categories, "job cat");
 
         res.status(200).json({ categories });
     } catch (error) {
