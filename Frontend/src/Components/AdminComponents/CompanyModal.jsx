@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createCompany, updateCompany, uploadCompanyLogo } from "../../Servises/adminApi";
+import { toast } from "react-toastify";
 
 const CompanyModal = ({ mode = "create", initialData = {}, onClose, onSuccess }) => {
     const isEditMode = mode === "edit";
     const [file, setFile] = useState(null);
-    // const [logoPreview, setLogoPreview] = useState(initialData?.logo || "");
+    const [logoPreview, setLogoPreview] = useState(initialData?.logo || "");
     const [apiError, setApiError] = useState(null);
 
     const validationSchema = Yup.object({

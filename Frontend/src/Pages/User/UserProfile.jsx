@@ -27,7 +27,7 @@ const UserProfile = () => {
         try {
             console.log(values);
 
-            const response = await updateUserProfile(values);
+            await updateUserProfile(values);
 
             toast.success("Profile updated successfully");
             setEditMode(false);

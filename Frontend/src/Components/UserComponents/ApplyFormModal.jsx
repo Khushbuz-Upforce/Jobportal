@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ApplyJob, getUser } from "../../Servises/userApi"; // Your centralized API call
-import axios from "axios";
 import { toast } from "react-toastify";
 
 const ApplyFormModal = ({ jobId, onClose }) => {
@@ -81,7 +80,7 @@ const ApplyFormModal = ({ jobId, onClose }) => {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [formik]);
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Logo from '../assets/logo.png';
 import { Link } from "react-router-dom";
 import { Menu, X, UserCircle, Bell } from 'lucide-react';
@@ -27,19 +27,16 @@ const Navbar = ({ setIsOpen, isOpen }) => {
   const toggleSidebar = () => setIsOpen(!isOpen);
   const handleLogout = () => dispatch(logoutUser());
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
-      if (!isAuthenticated) return;
-
-      // Check if user is admin
-      if (user?.role !== 'admin') return;
+      if (!isAuthenticated || user?.role !== 'admin') return;
 
       const res = await getNotigication();
       setNotifications(res.data.notifications || []);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
-  };
+  }, [isAuthenticated, user?.role]);
 
   const handleClearNotifications = async () => {
     try {
@@ -89,7 +86,8 @@ const Navbar = ({ setIsOpen, isOpen }) => {
     });
 
     return () => socket.off('new_notification');
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.role, fetchNotifications]);
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;

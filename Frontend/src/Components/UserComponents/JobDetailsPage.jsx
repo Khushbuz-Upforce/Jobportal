@@ -11,6 +11,7 @@ import {
 import Navbar from "../../Components/Navbar";
 import { getJobs } from "../../Servises/adminApi";
 import ApplyFormModal from "../../Components/UserComponents/ApplyFormModal"; // import modal
+import { toast } from "react-toastify";
 
 const JobDetailsPage = () => {
     const { jobId } = useParams();

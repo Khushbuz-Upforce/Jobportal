@@ -105,7 +105,7 @@ const UserTable = () => {
                     </thead>
                     <tbody>
                         {paginatedUsers.length > 0 ? (
-                            paginatedUsers.map((user, i) => (
+                            paginatedUsers.map((user) => (
                                 <tr key={user.id} className="border-t">
                                     <td className="px-4 py-2">{user.id}</td>
                                     <td className="px-4 py-2">{user.name}</td>

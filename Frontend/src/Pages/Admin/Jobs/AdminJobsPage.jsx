@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getJobs, deleteJob, getJobCategories } from "../../../Servises/adminApi";
 import JobTable from "../../../Components/AdminComponents/JobTable";
 import JobFormModal from "../../../Components/AdminComponents/JobFormModal";
@@ -25,7 +25,7 @@ const AdminJobsPage = () => {
     const debouncedSearch = useDebounce(search);
     const debouncedLocation = useDebounce(location);
 
-    const fetchJobs = async () => {
+    const fetchJobs = useCallback(async () => {
         setLoading(true);
         setError("");
         try {
@@ -43,16 +43,15 @@ const AdminJobsPage = () => {
             setTotalPages(res.data.totalPages);
         } catch (err) {
             setError("Failed to load jobs.");
-            toast.error(err.response.data.message)
+            toast.error(err.response.data.message);
         } finally {
             setLoading(false);
         }
-    };
+    }, [debouncedSearch, debouncedLocation, category, status, page]); // dependencies used inside
 
     useEffect(() => {
         fetchJobs();
-    }, [debouncedSearch, debouncedLocation, category, status, page]);
-
+    }, [fetchJobs]);
     useEffect(() => {
         const fetchCategories = async () => {
             try {

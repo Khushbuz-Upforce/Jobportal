@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getApplications, updateApplicationStatus } from "../../../Servises/adminApi";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import ApplicationDetailsModal from "../../../Components/AdminComponents/ApplicationDetailsModal";
@@ -14,19 +14,19 @@ const AdminApplicationsPage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [selectedApplication, setSelectedApplication] = useState(null);
 
-    const fetchApplications = async () => {
+    const fetchApplications = useCallback(async () => {
         const res = await getApplications(`search=${search}&page=${page}&limit=10`);
         setApplications(res.data.applications);
         // setTasks(res.data.applications);
         console.log(res.data.applications);
 
         setTotalPages(res.data.totalPages);
-    };
+    }, [search, page,])
 
     useEffect(() => {
         fetchApplications();
 
-    }, [search, page]);
+    }, [fetchApplications]);
 
     const COLUMNS = [
         { id: 'TODO', title: 'To Do' },

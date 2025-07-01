@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import { getUser, deleteUser } from "../../../Servises/adminApi";
@@ -19,7 +19,7 @@ const AdminUsersPage = () => {
     const [editUserId, setEditUserId] = useState(null);
     const [initialValues, setInitialValues] = useState({ username: "", email: "", password: "", role: "user" });
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             setLoading(true);
             const params = { search, page, limit, sortBy: sortField, sortOrder };
@@ -31,15 +31,14 @@ const AdminUsersPage = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [search, page, limit, sortField, sortOrder]);
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             fetchUsers();
         }, 500);
-
         return () => clearTimeout(delayDebounce);
-    }, [search, page, sortField, sortOrder]);
+    }, [fetchUsers]);
 
     const handleSort = (field) => {
         if (sortField === field) {
