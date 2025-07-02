@@ -196,7 +196,7 @@ const updateCompany = async (req, res) => {
 
 const getApplications = async (req, res) => {
     try {
-        const { search = "", jobId = "", page = 1, limit = 10 } = req.query;
+        const { search = "", jobId = "" } = req.query;
         // console.log(req.query, "q");
 
         let jobIds = [];
@@ -218,14 +218,11 @@ const getApplications = async (req, res) => {
 
         const applications = await Application.find(query)
             .populate("jobId", "title location category") // optional: more job fields
-            .skip((page - 1) * limit)
-            .limit(parseInt(limit));
 
-        const total = await Application.countDocuments(query);
 
         res.status(200).json({
             applications,
-            totalPages: Math.ceil(total / limit),
+
         });
     } catch (err) {
         console.error(err);

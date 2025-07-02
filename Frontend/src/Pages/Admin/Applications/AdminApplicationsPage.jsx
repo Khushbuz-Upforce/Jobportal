@@ -11,17 +11,15 @@ const AdminApplicationsPage = () => {
     const [applications, setApplications] = useState([]);
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [selectedApplication, setSelectedApplication] = useState(null);
 
     const fetchApplications = useCallback(async () => {
-        const res = await getApplications(`search=${search}&page=${page}&limit=10`);
+        const res = await getApplications(`search=${search}`);
         setApplications(res.data.applications);
         // setTasks(res.data.applications);
         console.log(res.data.applications);
 
-        setTotalPages(res.data.totalPages);
-    }, [search, page,])
+    }, [search])
 
     useEffect(() => {
         fetchApplications();
@@ -117,8 +115,8 @@ const AdminApplicationsPage = () => {
                     </div>
                 </div>
                 <DndContext onDragEnd={handleDragEnd}>
-                    <div className="">
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-gray-200">
+                    <div className="overflow-auto bg-gray-200 rounded-xl ">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4 p-4 min-w-[2400px]">
                             {COLUMNS.map((column) => (
                                 <Column
                                     key={column.id}
@@ -132,7 +130,7 @@ const AdminApplicationsPage = () => {
                 </DndContext>
 
                 {/* Pagination */}
-                <div className="flex flex-wrap justify-center mt-4 gap-2">
+                {/* <div className="flex flex-wrap justify-center mt-4 gap-2">
                     {[...Array(totalPages).keys()].map((num) => (
                         <button
                             key={num}
@@ -145,7 +143,7 @@ const AdminApplicationsPage = () => {
                             {num + 1}
                         </button>
                     ))}
-                </div>
+                </div> */}
 
                 {/* Modal */}
                 {selectedApplication && (

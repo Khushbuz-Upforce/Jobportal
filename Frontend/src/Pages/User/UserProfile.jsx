@@ -15,7 +15,7 @@ const UserProfile = () => {
     const initialValues = {
         name: user?.username || "",
         email: user?.email || "",
-        role: user?.role || "admin",
+        role: user?.role || "user",
     };
 
     const validationSchema = Yup.object({
@@ -42,8 +42,8 @@ const UserProfile = () => {
     return (
         <>
             <Navbar />
-            <div className="min-h-screen bg-gradient-to-br from-gray-200 via-gray-100 to-white pt-24">
-                <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+            <div className="min-h-screen pt-36">
+                <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-xl mb-3 font-bold text-gray-800 uppercase">
                             {initialValues.role} Profile
@@ -143,7 +143,6 @@ const UserProfile = () => {
                 </div>
             </div>
         </>
-
     );
 };
 
