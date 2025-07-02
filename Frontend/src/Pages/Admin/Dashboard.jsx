@@ -3,7 +3,7 @@ import AdminSidebarLayout from '../../Components/AdminComponents/AdminSidebarLay
 import { Outlet } from 'react-router-dom'
 import DashboardCard from '../../Components/AdminComponents/DashboardCard'
 
-export const Dashboard = () => {
+const Dashboard = () => {
     return (
         <>
             <AdminSidebarLayout>
@@ -13,3 +13,4 @@ export const Dashboard = () => {
         </>
     )
 }
+export default Dashboard
