@@ -115,8 +115,8 @@ const AdminApplicationsPage = () => {
                     </div>
                 </div>
                 <DndContext onDragEnd={handleDragEnd}>
-                    <div className="overflow-auto bg-gray-200 rounded-xl ">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4 p-4 min-w-[2400px]">
+                    <div className="overflow-auto bg-gray-200 rounded-xl">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4 p-0 md:p-4 min-w-[100%] lg:min-w-[2400px]">
                             {COLUMNS.map((column) => (
                                 <Column
                                     key={column.id}
