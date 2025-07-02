@@ -16,7 +16,7 @@ Description:
    🔸 Clone the Repogit clone https://github.com/Khushbuz-Upforce/Jobportal.git
    🔸 cd Jobportal
    
- ## For 🔸 Backend setup 
+ ## 🔸 Backend setup 
  -cd Backend
  
  -npm install
@@ -29,7 +29,7 @@ Description:
  JWT_SECRET= your_ JWT_SECRET
  
 
- ## FOr start Server 
+ ## For start Server 
  -npm start
 
 
