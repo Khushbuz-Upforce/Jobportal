@@ -31,7 +31,7 @@ const AdminSidebarLayout = ({ children }) => {
                 {/* Sidebar - Fixed on the left */}
                 <aside
                     className={`fixed top-16 left-0 w-100 h-[calc(100vh-4rem)] bg-white shadow-md z-40 transition-transform duration-300 ease-in-out
-      ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+                 ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
                 >
                     <div className="overflow-y-auto h-full px-4 py-6">
                         <nav className="space-y-1">

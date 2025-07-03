@@ -6,41 +6,51 @@ import {
     createJob,
     getCompanies,
     uploadJobImage,
-    getJobCategories,
     getCompanyIndustry,
 } from "../../Servises/adminApi";
 import { toast } from "react-toastify";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const JobFormModal = ({ job, onClose, onSuccess }) => {
-    const [companies, setCompanies] = useState([]);
-    const [categoryList, setCategoryList] = useState([]);
     const [imagePreview, setImagePreview] = useState(job?.JobImage || "");
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        const fetchCompanies = async () => {
-            try {
-                const res = await getCompanies();
-                setCompanies(res.data);
-                console.log(res.data, "company data");
+    // Fetch companies
+    const {
+        data: companyData,
+        isLoading: loadingCompanies,
+        error: companyError, } = useQuery({
+            queryKey: ["companies"],
+            queryFn: getCompanies,
+        });
 
-            } catch (err) {
-                console.error("Failed to fetch companies", err);
-            }
-        };
-        const fetchCategories = async () => {
-            try {
-                const res = await getCompanyIndustry();
-                setCategoryList(res.data.industry);
-                console.log(res.data.industry, "categoisd");
+    // Fetch categories (industries)
+    const {
+        data: industryData,
+        isLoading: loadingCategories,
+        error: categoryError,
+    } = useQuery({
+        queryKey: ["job-categories"],
+        queryFn: getCompanyIndustry,
+    });
 
-            } catch (err) {
-                console.error("Failed to fetch categories");
-                toast.error(err.response.data.message)
-            }
-        };
-        fetchCategories()
-        fetchCompanies();
-    }, []);
+    const companies = companyData?.data || [];
+    const categoryList = industryData?.data?.industry || [];
+
+    // Create or update job mutation
+    const jobMutation = useMutation({
+        mutationFn: async (values) => {
+            return job?._id ? updateJob(job._id, values) : createJob(values);
+        },
+        onSuccess: () => {
+            toast.success(job ? "Job updated" : "Job created");
+            queryClient.invalidateQueries({ queryKey: ["jobs"] });
+            onSuccess();
+        },
+        onError: (err) => {
+            toast.error(err?.response?.data?.message || "Job operation failed");
+        },
+    });
 
     const formik = useFormik({
         initialValues: {
@@ -62,19 +72,8 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
             salary: Yup.number().typeError("Salary must be a number").required("Salary is required"),
             description: Yup.string().required("Description is required"),
         }),
-        onSubmit: async (values) => {
-            try {
-                if (job?._id) {
-                    await updateJob(job._id, values);
-                } else {
-                    await createJob(values);
-                }
-                onSuccess();
-                onClose();
-            } catch (err) {
-                console.error("Failed to submit job:", err);
-                toast.error(err.response.data.message)
-            }
+        onSubmit: (values) => {
+            jobMutation.mutate(values);
         },
     });
 
@@ -230,8 +229,9 @@ const JobFormModal = ({ job, onClose, onSuccess }) => {
                         <button
                             type="submit"
                             className="bg-green-600 px-4 py-2 rounded text-white"
+                            disabled={jobMutation.isLoading}
                         >
-                            Save
+                            {jobMutation.isLoading ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </form>

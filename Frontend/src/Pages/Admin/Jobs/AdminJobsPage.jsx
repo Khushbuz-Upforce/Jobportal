@@ -1,77 +1,79 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { getJobs, deleteJob, getJobCategories } from "../../../Servises/adminApi";
 import JobTable from "../../../Components/AdminComponents/JobTable";
 import JobFormModal from "../../../Components/AdminComponents/JobFormModal";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import JobDetailsModal from "../../../Components/AdminComponents/JobDetailsModal ";
 import useDebounce from "../../../hooks/useDebounce";
+import { useQuery, useMutation, useQueryClient, } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 const AdminJobsPage = () => {
-    const [jobs, setJobs] = useState([]);
     const [search, setSearch] = useState("");
     const [location, setLocation] = useState("");
     const [category, setCategory] = useState("");
     const [status, setStatus] = useState("");
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+
     const [selectedJob, setSelectedJob] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedJobDetails, setSelectedJobDetails] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
 
-    const [categoryList, setCategoryList] = useState([]);
     const debouncedSearch = useDebounce(search);
     const debouncedLocation = useDebounce(location);
 
-    const fetchJobs = useCallback(async () => {
-        setLoading(true);
-        setError("");
-        try {
-            const params = new URLSearchParams({
-                search: debouncedSearch,
-                location: debouncedLocation,
-                category,
-                status,
-                page,
-                limit: 10,
-            }).toString();
+    const queryClient = useQueryClient();
 
-            const res = await getJobs(params);
-            setJobs(res.data.jobs);
-            setTotalPages(res.data.totalPages);
-        } catch (err) {
-            setError("Failed to load jobs.");
-            toast.error(err.response.data.message);
-        } finally {
-            setLoading(false);
+
+    // ✅ Fetch Job Categories
+    const { data: categoryData, isLoading: loadingCategories, } = useQuery({
+        queryKey: ["jobCategories"],
+        queryFn: getJobCategories,
+        select: (res) => res.data.categories,
+    });
+
+    // ✅ Fetch Jobs
+    const { data: jobData, isLoading: loadingJobs, error: jobsError, } = useQuery({
+        queryKey: ["jobs", {
+            search: debouncedSearch,
+            location: debouncedLocation,
+            category,
+            status,
+            page,
+        },],
+        queryFn: () => getJobs(new URLSearchParams({
+            search: debouncedSearch,
+            location: debouncedLocation,
+            category,
+            status,
+            page,
+            limit: 10,
+        }).toString()
+        ),
+        keepPreviousData: true,
+    });
+
+    // ✅ Delete Job Mutation
+    const deleteJobMutation = useMutation({
+        mutationFn: deleteJob,
+        onSuccess: () => {
+            toast.success("Job deleted");
+            queryClient.invalidateQueries(["jobs"]);
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Failed to delete job");
+        },
+    });
+
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure you want to delete this job?")) {
+            deleteJobMutation.mutate(id);
         }
-    }, [debouncedSearch, debouncedLocation, category, status, page]); // dependencies used inside
-
-    useEffect(() => {
-        fetchJobs();
-    }, [fetchJobs]);
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const res = await getJobCategories();
-                setCategoryList(res.data.categories);
-                console.log(res.data.categories, "categoisd");
-
-            } catch (err) {
-                console.error("Failed to fetch categories");
-                toast.error(err.response.data.message)
-            }
-        };
-
-        fetchCategories();
-    }, []);
-
-    const handleDelete = async (id) => {
-        await deleteJob(id);
-        fetchJobs();
     };
+    const jobs = jobData?.data?.jobs || [];
+    const totalPages = jobData?.data?.totalPages || 1;
+    const categoryList = categoryData || [];
+
 
     return (
         <AdminSidebarLayout>
@@ -131,12 +133,11 @@ const AdminJobsPage = () => {
                     </button>
                 </div>
 
-                {/* Loading / Error */}
-                {loading && <p className="text-center text-gray-500">Loading jobs...</p>}
-                {error && <p className="text-center text-red-500">{error}</p>}
-
-                {/* Job Table */}
-                {!loading && !error && (
+                {loadingJobs ? (
+                    <p className="text-center text-gray-500">Loading jobs...</p>
+                ) : jobsError ? (
+                    <p className="text-center text-red-500">Failed to load jobs</p>
+                ) : (
                     <JobTable
                         jobs={jobs}
                         onEdit={(job) => {
@@ -168,7 +169,7 @@ const AdminJobsPage = () => {
                         onClose={() => setShowModal(false)}
                         onSuccess={() => {
                             setShowModal(false);
-                            fetchJobs();
+                            queryClient.invalidateQueries(["jobs"]);
                         }}
                     />
                 )}

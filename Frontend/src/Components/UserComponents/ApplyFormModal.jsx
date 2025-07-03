@@ -5,11 +5,29 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ApplyJob, getUser } from "../../Servises/userApi"; // Your centralized API call
 import { toast } from "react-toastify";
-
+import { useMutation, useQuery } from "@tanstack/react-query";
 const ApplyFormModal = ({ jobId, onClose }) => {
     const navigate = useNavigate();
-    const [uploading, setUploading] = useState(false);
 
+    // ✅ Fetch user info
+    const { data: userData, isLoading: userLoading } = useQuery({
+        queryKey: ["userProfile"],
+        queryFn: getUser,
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Failed to fetch user profile");
+        },
+    });
+    // ✅ Mutation for applying to job
+    const { mutateAsync: applyJobMutation, isPending } = useMutation({
+        mutationFn: (formData) => ApplyJob(formData),
+        onSuccess: (res) => {
+            toast.success(res.data.message || "Application submitted!");
+            navigate("/application");
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Failed to submit application.");
+        },
+    });
     const formik = useFormik({
         initialValues: {
             applicantName: "",
@@ -28,59 +46,21 @@ const ApplyFormModal = ({ jobId, onClose }) => {
             resume: Yup.mixed().required("Resume is required"),
         }),
         onSubmit: async (values, { setSubmitting }) => {
-            try {
-                setUploading(true);
+            const formData = new FormData();
+            formData.append("applicantName", values.applicantName);
+            formData.append("email", values.email);
+            formData.append("phone", values.phone);
+            formData.append("coverLetter", values.coverLetter);
+            formData.append("resume", values.resume);
+            formData.append("jobId", jobId);
 
-                const formData = new FormData();
-                formData.append("applicantName", values.applicantName);
-                formData.append("email", values.email);
-                formData.append("phone", values.phone);
-                formData.append("coverLetter", values.coverLetter);
-                formData.append("resume", values.resume);
-                formData.append("jobId", jobId);
-
-                const res = await ApplyJob(formData); // Use updated ApplyJob
-                toast.success(res.data.message)
-                // console.log(res);
-
-                navigate("/application");
-            } catch (err) {
-                console.error("Submission failed:", err);
-                toast(err.response.data.message || "Application failed. Please try again.")
-            } finally {
-                setUploading(false);
-                setSubmitting(false);
-            }
+            await applyJobMutation(formData);
+            setSubmitting(false);
         },
 
     });
 
-    // Prefill user data from profile
-    useEffect(() => {
-        let isMounted = true;
-        const fetchUser = async () => {
-            try {
-                const res = await getUser();
-                console.log(res.data, "user data");
 
-                if (isMounted) {
-                    formik.setValues((prev) => ({
-                        ...prev,
-                        applicantName: res.data.username || "",
-                        email: res.data.email || "",
-
-                    }));
-                }
-            } catch (err) {
-                console.error("Failed to fetch user profile:", err);
-                toast.error(err.response.data.message)
-            }
-        };
-        fetchUser();
-        return () => {
-            isMounted = false;
-        };
-    }, [formik]);
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
@@ -177,10 +157,10 @@ const ApplyFormModal = ({ jobId, onClose }) => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={formik.isSubmitting || uploading}
+                        disabled={formik.isSubmitting || isPending}
                         className="w-full bg-yellow hover:bg-yellow-500 text-gray-900 font-semibold py-2 px-4 rounded"
                     >
-                        {formik.isSubmitting || uploading ? "Submitting..." : "Submit Application"}
+                        {formik.isSubmitting || isPending ? "Submitting..." : "Submit Application"}
                     </button>
                 </form>
             </div>

@@ -54,7 +54,15 @@ const authSlice = createSlice({
         error: null,
         isAuthenticated: !!userFromStorage,
     },
-    reducers: {},
+    reducers: {
+        updateUser: (state, action) => {
+            state.user = {
+                ...state.user,
+                ...action.payload, // updated fields only
+            };
+            localStorage.setItem('user', JSON.stringify(state.user));
+        },
+    },
     extraReducers: builder => {
         builder
             .addCase(registerUser.pending, (state) => {
@@ -85,7 +93,7 @@ const authSlice = createSlice({
                 state.user = action.payload.Users;
                 state.token = action.payload.token;
                 state.isAuthenticated = true;
-                console.log("[REDUX] Login fulfilled payload:", action.payload);
+                // console.log("[REDUX] Login fulfilled payload:", action.payload);
 
                 // Save to localStorage
                 localStorage.setItem('user', JSON.stringify(action.payload.Users));
@@ -112,5 +120,6 @@ const authSlice = createSlice({
             });
     },
 });
+export const { updateUser } = authSlice.actions;
 
 export default authSlice.reducer;

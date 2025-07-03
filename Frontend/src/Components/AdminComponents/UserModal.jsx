@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createUser, updateUser } from "../../Servises/adminApi";
 import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 
 const UserModal = ({
     isOpen,
@@ -12,7 +13,31 @@ const UserModal = ({
     editUserId,
     onSuccess,
 }) => {
+    // --- Create User Mutation ---
+    const createMutation = useMutation({
+        mutationFn: createUser,
+        onSuccess: () => {
+            toast.success("User created successfully");
+            onSuccess(); // callback to refetch and close modal
+        },
+        onError: (error) => {
+            toast.error(error.response.data.massage || "Failed to create user");
 
+        },
+    });
+
+    // --- Update User Mutation ---
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }) => updateUser(id, data),
+        onSuccess: () => {
+            toast.success("User updated successfully");
+            onSuccess(); // callback to refetch and close modal
+        },
+        onError: (error) => {
+            toast.error(error.response.data.massage || "Failed to update user");
+            // console.log(error, "Failed to update user");
+        },
+    });
 
     const formik = useFormik({
         initialValues,
@@ -21,31 +46,25 @@ const UserModal = ({
             username: Yup.string().required("Username is required"),
             email: Yup.string().email("Invalid email").required("Email is required"),
             password: !isEditMode
-                ? Yup.string().min(6, "Password must be at least 6 characters").required("Password is required")
+                ? Yup.string()
+                    .min(6, "Password must be at least 6 characters")
+                    .required("Password is required")
                 : Yup.string(),
-            role: Yup.string().oneOf(["user", "admin", "recruiter"]).required("Role is required"),
+            role: Yup.string()
+                .oneOf(["user", "admin", "recruiter"])
+                .required("Role is required"),
         }),
-        onSubmit: async (values, { setSubmitting }) => {
-            try {
-                if (isEditMode) {
-                    // console.log(values, "Edit values");
-                    // console.log(editUserId, "Edit ID");
-
-                    await updateUser(editUserId, values);
-                } else {
-                    // console.log(values, "Create values");
-                    await createUser(values);
-                }
-                onSuccess();
-            } catch (error) {
-                console.error("User save failed", error);
-                toast.error(error.response.data.message)
-            } finally {
-                setSubmitting(false);
+        onSubmit: async (values) => {
+            if (isEditMode) {
+                updateMutation.mutate({ id: editUserId, data: values });
+            } else {
+                createMutation.mutate(values);
             }
         },
     });
+
     if (!isOpen) return null;
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
@@ -130,7 +149,11 @@ const UserModal = ({
                             disabled={formik.isSubmitting}
                             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                         >
-                            {formik.isSubmitting ? "Saving..." : isEditMode ? "Update" : "Create"}
+                            {(createMutation.isLoading || updateMutation.isLoading)
+                                ? "Saving..."
+                                : isEditMode
+                                    ? "Update"
+                                    : "Create"}
                         </button>
                     </div>
                 </form>

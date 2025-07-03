@@ -6,25 +6,35 @@ import { toast } from 'react-toastify';
 import { DndContext } from "@dnd-kit/core";
 import Column from "../../../Components/AdminComponents/Column";
 import { Search } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AdminApplicationsPage = () => {
-    const [applications, setApplications] = useState([]);
     const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const queryClient = useQueryClient();
 
-    const fetchApplications = useCallback(async () => {
-        const res = await getApplications(`search=${search}`);
-        setApplications(res.data.applications);
-        // setTasks(res.data.applications);
-        console.log(res.data.applications);
+    // Query to fetch applications based on search term
+    const {
+        data: applications = [],
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey: ['applications', search],
+        queryFn: () => getApplications(`search=${search}`).then(res => res.data.applications),
+        keepPreviousData: true,
+    });
 
-    }, [search])
-
-    useEffect(() => {
-        fetchApplications();
-
-    }, [fetchApplications]);
+    // Mutation for updating application status
+    const mutation = useMutation({
+        mutationFn: ({ id, status }) => updateApplicationStatus(id, status),
+        onSuccess: () => {
+            toast.success("Status updated");
+            queryClient.invalidateQueries(['applications']);
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+    });
 
     const COLUMNS = [
         { id: 'TODO', title: 'To Do' },
@@ -36,24 +46,6 @@ const AdminApplicationsPage = () => {
         { id: 'Hired', title: 'Hired' },
         { id: 'Rejected', title: 'Rejected' },
     ];
-
-    // const handleDragEnd = (event) => {
-    //     const { active, over } = event;
-
-    //     if (!over || !active) return;
-
-    //     const sourceColumn = active.id; //1
-    //     const targetColumn = over.id; //inpregress
-
-    //     if (!sourceColumn || !targetColumn || sourceColumn === targetColumn) return;
-
-    //     setTasks((prevTask) =>
-    //         prevTask.map((task) =>
-    //             active.id === task.id ? { ...task, status: targetColumn } : task
-    //         )
-    //     );
-    // };
-
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
@@ -70,26 +62,14 @@ const AdminApplicationsPage = () => {
 
         if (!draggedApp || draggedApp.status === newStatus) return;
 
-        try {
-            // Optimistically update UI
-            setApplications((prev) =>
-                prev.map((app) =>
-                    app._id === applicationId ? { ...app, status: newStatus } : app
-                )
-            );
+        // Optimistically update UI
+        queryClient.setQueryData(['applications', search], (oldData) =>
+            oldData.map((app) =>
+                app._id === applicationId ? { ...app, status: newStatus } : app
+            )
+        );
 
-            await updateApplicationStatus(applicationId, newStatus);
-            toast.success("Status updated");
-        } catch (error) {
-            toast.error("Failed to update status");
-            toast.error(error.response.data.message)
-            // Revert on error
-            setApplications((prev) =>
-                prev.map((app) =>
-                    app._id === applicationId ? { ...app, status: draggedApp.status } : app
-                )
-            );
-        }
+        mutation.mutate({ id: applicationId, status: newStatus });
     };
 
     return (
@@ -99,7 +79,6 @@ const AdminApplicationsPage = () => {
                     <h1 className="text-xl mb-3 font-bold text-gray-800">
                         Applications
                     </h1>
-
 
                     <div className="relative w-full max-w-sm mb-4">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
@@ -114,36 +93,27 @@ const AdminApplicationsPage = () => {
                         />
                     </div>
                 </div>
-                <DndContext onDragEnd={handleDragEnd}>
-                    <div className="overflow-auto bg-gray-200 rounded-xl">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4 p-0 md:p-4 min-w-[100%] lg:min-w-[2400px]">
-                            {COLUMNS.map((column) => (
-                                <Column
-                                    key={column.id}
-                                    column={column}
-                                    app={applications.filter((task) => task.status === column.id)}
-                                    onViewDetails={(app) => setSelectedApplication(app)}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </DndContext>
 
-                {/* Pagination */}
-                {/* <div className="flex flex-wrap justify-center mt-4 gap-2">
-                    {[...Array(totalPages).keys()].map((num) => (
-                        <button
-                            key={num}
-                            onClick={() => setPage(num + 1)}
-                            className={`px-3 py-1 rounded text-sm ${page === num + 1
-                                ? "bg-yellow-500 text-white"
-                                : "bg-gray-200 text-gray-800"
-                                }`}
-                        >
-                            {num + 1}
-                        </button>
-                    ))}
-                </div> */}
+                {isLoading ? (
+                    <p className="text-center text-gray-500 mt-6">Loading applications...</p>
+                ) : isError ? (
+                    <p className="text-center text-red-500 mt-6">Failed to load applications.</p>
+                ) : (
+                    <DndContext onDragEnd={handleDragEnd}>
+                        <div className="overflow-auto bg-gray-200 rounded-xl">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 gap-4 p-0 md:p-4 min-w-[100%] lg:min-w-[2400px]">
+                                {COLUMNS.map((column) => (
+                                    <Column
+                                        key={column.id}
+                                        column={column}
+                                        app={applications.filter((task) => task.status === column.id)}
+                                        onViewDetails={(app) => setSelectedApplication(app)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </DndContext>
+                )}
 
                 {/* Modal */}
                 {selectedApplication && (

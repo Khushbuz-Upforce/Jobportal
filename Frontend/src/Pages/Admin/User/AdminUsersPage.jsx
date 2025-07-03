@@ -1,44 +1,48 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import AdminSidebarLayout from "../../../Components/AdminComponents/AdminSidebarLayout";
 import { getUser, deleteUser } from "../../../Servises/adminApi";
 import UserModal from "../../../Components/AdminComponents/UserModal"; // import here
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AdminUsersPage = () => {
-    const [users, setUsers] = useState([]);
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [search, setSearch] = useState("");
     const [sortField, setSortField] = useState("createdAt");
     const [sortOrder, setSortOrder] = useState("desc");
-    const [totalPages, setTotalPages] = useState(1);
-    const [loading, setLoading] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editUserId, setEditUserId] = useState(null);
     const [initialValues, setInitialValues] = useState({ username: "", email: "", password: "", role: "user" });
 
-    const fetchUsers = useCallback(async () => {
-        try {
-            setLoading(true);
-            const params = { search, page, limit, sortBy: sortField, sortOrder };
-            const res = await getUser(params);
-            setUsers(res.data.users);
-            setTotalPages(res.data.pagination.totalPages);
-        } catch (error) {
-            console.error("Failed to fetch users:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [search, page, limit, sortField, sortOrder]);
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            fetchUsers();
-        }, 500);
-        return () => clearTimeout(delayDebounce);
-    }, [fetchUsers]);
+
+    const { data, isLoading, isError, } = useQuery({
+        queryKey: ["users", { page, limit, search, sortField, sortOrder }],
+        queryFn: () =>
+            getUser({ page, limit, search, sortBy: sortField, sortOrder }),
+        keepPreviousData: true,
+    });
+    const tableHeaders = useMemo(() => ["id", "username", "email", "role", "actions"], []);
+
+    // delete user
+    const deleteMutation = useMutation({
+        mutationFn: deleteUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["users"]);
+        },
+    });
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            deleteMutation.mutate(id);
+        }
+    };
+
+
 
     const handleSort = (field) => {
         if (sortField === field) {
@@ -46,13 +50,6 @@ const AdminUsersPage = () => {
         } else {
             setSortField(field);
             setSortOrder("asc");
-        }
-    };
-
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
-            await deleteUser(id);
-            fetchUsers();
         }
     };
 
@@ -70,6 +67,8 @@ const AdminUsersPage = () => {
         setEditUserId(user._id);
         setShowModal(true);
     };
+    const users = data?.data?.users || [];
+    const totalPages = data?.data?.pagination?.totalPages || 1;
 
     return (
         <AdminSidebarLayout>
@@ -96,7 +95,7 @@ const AdminUsersPage = () => {
                     <table className="min-w-full text-sm divide-y divide-gray-200">
                         <thead className="bg-gray-100 text-gray-700 text-left uppercase text-xs">
                             <tr>
-                                {["id", "username", "email", "role", "actions"].map((field) => (
+                                {tableHeaders.map((field) => (
                                     <th
                                         key={field}
                                         className="px-4 py-3 cursor-pointer select-none"
@@ -117,12 +116,14 @@ const AdminUsersPage = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {loading ? (
+                            {isLoading ? (
                                 <tr>
                                     <td colSpan="5" className="text-center py-4">
                                         Loading users...
                                     </td>
                                 </tr>
+                            ) : isError ? (
+                                <tr><td colSpan="5" className="text-center py-4 text-red-600">Error fetching users</td></tr>
                             ) : users.length > 0 ? (
                                 users.map((user, index) => (
                                     <tr key={user._id} className="hover:bg-gray-50">
@@ -188,7 +189,7 @@ const AdminUsersPage = () => {
                 editUserId={editUserId}
                 onSuccess={() => {
                     setShowModal(false);
-                    fetchUsers();
+                    queryClient.invalidateQueries(["users"]);
                 }}
             />
 

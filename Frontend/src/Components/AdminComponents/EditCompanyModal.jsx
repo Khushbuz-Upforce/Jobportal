@@ -2,8 +2,8 @@ import React from "react";
 
 const EditCompanyModal = ({ formData, setFormData, onSave, onClose, onFileChange }) => {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
                 <h2 className="text-lg font-semibold mb-4 text-gray-700">Edit Company</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GetUserApplications } from "../../Servises/userApi";
 import { FaDownload } from "react-icons/fa";
 import Navbar from "../../Components/Navbar";
+import { useQuery } from "@tanstack/react-query";
 
 const statusColors = {
     Pending: "bg-yellow-100 text-yellow-800",
@@ -14,24 +15,18 @@ const statusColors = {
 };
 
 const MyApplications = () => {
-    const [applications, setApplications] = useState([1, 2, 3]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetch = async () => {
-            try {
-                const res = await GetUserApplications();
-                setApplications(res.data.applications);
-                console.log(res.data.applications);
-
-            } catch (err) {
-                console.error("Failed to load applications", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetch();
-    }, []);
+    const {
+        data: applications = [],
+        isLoading,
+        isError,
+        error
+    } = useQuery({
+        queryKey: ["userApplications"],
+        queryFn: async () => {
+            const res = await GetUserApplications();
+            return res.data.applications;
+        },
+    });
 
     return (
         <>
@@ -41,9 +36,9 @@ const MyApplications = () => {
                     My Job Applications
                 </h2>
 
-                {loading ? (
+                {isLoading ? (
                     <div className="space-y-4">
-                        {applications.map((i) => (
+                        {applications.map((_, i) => (
                             <div key={i} className="animate-pulse p-4 border rounded bg-white shadow">
                                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                                 <div className="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>
@@ -51,6 +46,8 @@ const MyApplications = () => {
                             </div>
                         ))}
                     </div>
+                ) : isError ? (
+                    <p className="text-red-500 text-sm">{error?.response?.data?.message || "Failed to load applications."}</p>
                 ) : applications.length === 0 ? (
                     <p className="text-gray-500">You haven't applied to any jobs yet.</p>
                 ) : (

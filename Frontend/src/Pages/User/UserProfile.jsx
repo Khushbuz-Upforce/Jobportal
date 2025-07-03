@@ -1,48 +1,55 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Pencil, Mail, User, ShieldCheck } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { updateUserProfile } from "../../Servises/adminApi";
 import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
+import { updateUser } from "../../redux/authSlice";
 import Navbar from "../../Components/Navbar";
 
 
-const UserProfile = () => {
+const AdminProfilePage = () => {
     const { user } = useSelector((state) => state.auth);
+    // console.log(user, "user");
+    const dispatch = useDispatch();
+
     const [editMode, setEditMode] = useState(false);
 
     const initialValues = {
-        name: user?.username || "",
+        username: user?.username || "",
         email: user?.email || "",
-        role: user?.role || "user",
+        role: user?.role || "admin",
     };
 
     const validationSchema = Yup.object({
-        name: Yup.string().required("Name is required"),
+        username: Yup.string().required("Name is required"),
         email: Yup.string().email("Invalid email format").required("Email is required"),
     });
 
-    const handleSubmit = async (values, { setSubmitting }) => {
-        try {
-            console.log(values);
-
-            await updateUserProfile(values);
-
+    // React Query Mutation
+    const { mutate, isPending } = useMutation({
+        mutationFn: updateUserProfile,
+        onSuccess: () => {
             toast.success("Profile updated successfully");
             setEditMode(false);
-        } catch (err) {
+        },
+        onError: (err) => {
             console.error("Update failed:", err);
-            toast.error("Failed to update profile");
-        } finally {
-            setSubmitting(false);
-        }
-    };
+            toast.error(err?.response?.data?.message || "Failed to update profile");
+        },
+    });
+    const handleSubmit = (values) => {
+        // console.log(values, "valuse profile");
 
+        mutate(values); // trigger mutation
+        dispatch(updateUser(values));
+    };
     return (
         <>
             <Navbar />
-            <div className="min-h-screen pt-36">
+            <div className="min-h-screen pt-32">
                 <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-xl mb-3 font-bold text-gray-800 uppercase">
@@ -69,7 +76,7 @@ const UserProfile = () => {
                             <Form>
                                 <div className="flex flex-col md:flex-row items-center gap-6">
                                     <img
-                                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${values.name}`}
+                                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${values.username}`}
                                         alt="Profile"
                                         className="w-28 h-28 rounded-full border-4 border-yellow-400"
                                     />
@@ -82,11 +89,11 @@ const UserProfile = () => {
                                             </label>
                                             <Field
                                                 type="text"
-                                                name="name"
+                                                name="username"
                                                 disabled={!editMode}
                                                 className={`w-full border p-2 rounded mt-1 ${editMode ? "bg-white" : "bg-gray-100"}`}
                                             />
-                                            <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
+                                            <ErrorMessage name="username" component="div" className="text-red-500 text-sm" />
                                         </div>
 
                                         {/* Email Field */}
@@ -128,10 +135,10 @@ const UserProfile = () => {
                                                 </button>
                                                 <button
                                                     type="submit"
-                                                    disabled={isSubmitting}
+                                                    disabled={isPending}
                                                     className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
                                                 >
-                                                    {isSubmitting ? "Saving..." : "Save Changes"}
+                                                    {isPending ? "Saving..." : "Save Changes"}
                                                 </button>
                                             </div>
                                         )}
@@ -146,4 +153,4 @@ const UserProfile = () => {
     );
 };
 
-export default UserProfile;
+export default AdminProfilePage;

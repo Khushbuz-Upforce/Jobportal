@@ -12,7 +12,7 @@ const Register = lazy(() => import('./Pages/Auth/Register'));
 
 const Dashboard = lazy(() => import('./Pages/Admin/Dashboard'));
 const AdminJobsPage = lazy(() => import('./Pages/Admin/Jobs/AdminJobsPage'));
-const AdminCompaniesPage = lazy(() => import('./Pages/Admin/Conpanies/AdminCompaniesPage'));
+const AdminCompaniesPage = lazy(() => import('./Pages/Admin/Companies/AdminCompaniesPage'));
 const AdminUsersPage = lazy(() => import('./Pages/Admin/User/AdminUsersPage'));
 const AdminApplicationsPage = lazy(() => import('./Pages/Admin/Applications/AdminApplicationsPage'));
 const AdminProfilePage = lazy(() => import('./Pages/Admin/User/AdminProfilePage'));

@@ -3,29 +3,20 @@ import { getJobs } from "../../Servises/adminApi";
 import { MapPin } from "lucide-react";
 import Navbar from "../../Components/Navbar";
 import { useNavigate } from "react-router-dom";
-
+import { useQuery } from "@tanstack/react-query";
 const JobsPage = () => {
-    const [jobs, setJobs] = useState([]);
-
-    const [loading, setLoading] = useState(true);
-
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const res = await getJobs();
-                setJobs(res.data.jobs || []);
-            } catch (err) {
-                console.error("Error fetching jobs:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchJobs();
-    }, []);
-
+    const {
+        data,
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["jobs"],
+        queryFn: getJobs,
+        select: (res) => res.data.jobs || [],
+    });
 
     return (
         <>
@@ -37,9 +28,9 @@ const JobsPage = () => {
                     </h1>
 
                     <div className="">
-                        {loading ? (
+                        {isLoading ? (
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {[...Array(6)].map((i) => (
+                                {[...Array(6)].map((_, i) => (
                                     <div key={i} className="animate-pulse p-4 border rounded bg-white shadow mt-0">
                                         <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
                                         <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
@@ -50,9 +41,11 @@ const JobsPage = () => {
                                     </div>
                                 ))}
                             </div>
+                        ) : isError ? (
+                            <div className="text-center text-red-500">Error: {error?.response?.data?.message}</div>
                         ) : (
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {jobs.map((job) => (
+                                {data.map((job) => (
                                     <div
                                         key={job._id}
                                         className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-transform transform hover:-translate-y-1"

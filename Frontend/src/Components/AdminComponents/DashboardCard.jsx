@@ -8,32 +8,24 @@ import {
     FileUser,
 } from "lucide-react";
 import { getDashboardStats } from "../../Servises/adminApi";
-
+import { useQuery } from "@tanstack/react-query";
 const DashboardCard = () => {
-    const [stats, setStats] = useState({
-        userCount: 0,
-        adminCount: 0,
-        companyCount: 0,
-        jobsCount: 0,
-        applicationsCount: 0
+
+    // React Query usage
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["dashboardStats"],
+        queryFn: getDashboardStats,
+        select: (res) => res.data
     });
-
-    const navigate = useNavigate();
-
-    const fetchStats = async () => {
-        try {
-            const res = await getDashboardStats();
-            setStats(res.data);
-            console.log(res.data, "Users");
-
-        } catch (error) {
-            console.error("Failed to fetch dashboard stats:", error);
-        }
+    const stats = {
+        userCount: data?.userCount || 0,
+        adminCount: data?.adminCount || 0,
+        companyCount: data?.companyCount || 0,
+        jobsCount: data?.jobsCount || 0,
+        applicationsCount: data?.applicationsCount || 0
     };
 
-    useEffect(() => {
-        fetchStats();
-    }, []);
+    const navigate = useNavigate();
 
     const statItems = [
         {

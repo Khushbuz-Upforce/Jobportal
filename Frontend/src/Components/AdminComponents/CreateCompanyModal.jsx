@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { createCompany, uploadCompanyLogo } from "../../Servises/adminApi";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { createCompany, uploadCompanyLogo } from "../../Servises/adminApi";
 
 const CreateCompanyModal = ({ onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -11,15 +12,39 @@ const CreateCompanyModal = ({ onClose, onSuccess }) => {
         description: "",
         industry: "",
     });
+
     const [file, setFile] = useState(null);
+
+    const uploadMutation = useMutation({
+        mutationFn: uploadCompanyLogo,
+        onSuccess: (res) => {
+            setFormData((prev) => ({ ...prev, logo: res.data.url }));
+            toast.success("Logo uploaded successfully");
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Upload failed");
+        },
+    });
+
+    const createMutation = useMutation({
+        mutationFn: createCompany,
+        onSuccess: () => {
+            toast.success("Company created");
+            onSuccess?.();
+            onClose?.();
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Create failed");
+        },
+    });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        setFile(selectedFile);
+        const selected = e.target.files[0];
+        setFile(selected);
     };
 
     const handleSubmit = async (e) => {
@@ -28,84 +53,102 @@ const CreateCompanyModal = ({ onClose, onSuccess }) => {
             if (file) {
                 const fd = new FormData();
                 fd.append("file", file);
-                const res = await uploadCompanyLogo(fd);
-                formData.logo = res.data.url;
+                await uploadMutation.mutateAsync(fd);
             }
-
-            await createCompany(formData);
-            onSuccess(); // Refresh parent list
-            onClose();
+            createMutation.mutate(formData);
         } catch (err) {
-            console.error("Failed to create company:", err);
-            toast.error(err.response.data.message)
+            console.error("Error creating company:", err);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg relative">
-                <h2 className="text-xl font-semibold mb-4">Create New Company</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Company Name"
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="Email"
-                        className="w-full p-2 border rounded"
-                    />
-                    <input
-                        type="url"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleChange}
-                        placeholder="Website"
-                        className="w-full p-2 border rounded"
-                    />
-                    <input
-                        type="text"
-                        name="industry"
-                        value={formData.industry}
-                        onChange={handleChange}
-                        placeholder="Industry"
-                        className="w-full p-2 border rounded"
-                    />
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        placeholder="Description"
-                        rows={3}
-                        className="w-full p-2 border rounded resize-none"
-                    />
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="w-full p-2 border rounded"
-                    />
-                    <div className="flex justify-end gap-3 mt-4">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 overflow-y-auto max-h-[90vh]">
+                <h2 className="text-2xl font-semibold mb-6 text-center">Create New Company</h2>
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium">Company Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            className="w-full border p-2 rounded-md"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            className="w-full border p-2 rounded-md"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium">Website</label>
+                        <input
+                            type="url"
+                            name="website"
+                            className="w-full border p-2 rounded-md"
+                            value={formData.website}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium">Industry</label>
+                        <input
+                            type="text"
+                            name="industry"
+                            className="w-full border p-2 rounded-md"
+                            value={formData.industry}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label className="block text-sm font-medium">Description</label>
+                        <textarea
+                            name="description"
+                            className="w-full border p-2 rounded-md"
+                            rows="3"
+                            value={formData.description}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label className="block text-sm font-medium">Company Logo</label>
+                        <input type="file" accept="image/*" onChange={handleFileChange} />
+                        {formData.logo && (
+                            <img
+                                src={formData.logo}
+                                alt="Logo Preview"
+                                className="h-20 mt-2 rounded shadow"
+                            />
+                        )}
+                    </div>
+
+                    <div className="sm:col-span-2 flex justify-end gap-3 mt-4">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-100"
+                            className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            disabled={createMutation.isLoading}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                         >
-                            Create
+                            {createMutation.isLoading ? "Creating..." : "Create"}
                         </button>
                     </div>
                 </form>
