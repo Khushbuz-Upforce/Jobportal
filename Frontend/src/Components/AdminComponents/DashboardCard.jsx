@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getDashboardStats } from "../../Servises/adminApi";
 import { useQuery } from "@tanstack/react-query";
+import DashboardChart from "./DashboardChart";
 const DashboardCard = () => {
 
     // React Query usage
@@ -94,6 +95,8 @@ const DashboardCard = () => {
                     </div>
                 ))}
             </div>
+            {/* Chart Component */}
+            <DashboardChart stats={stats} />
         </div>
     );
 };
