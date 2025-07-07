@@ -35,7 +35,6 @@ const DashboardChart = ({ stats }) => {
         <div className="mt-8 bg-white rounded-2xl p-6 shadow-lg">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                 <h2 className="text-lg font-semibold text-gray-800">Statistics Overview</h2>
-
                 <div className="flex items-center gap-2">
                     {/* Chart Type Toggle */}
                     <button
