@@ -15,6 +15,7 @@
     "socket.io": "^4.8.1"
   },
   "scripts": {
+    "build": "node -e \"console.log('Backend: no compile step');\"",
     "start": "node index.js",
     "seed:applications": "node seed/applications.js"
   }
