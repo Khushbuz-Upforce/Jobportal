@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "vite preview"
+  "build": "vite build",
+  "preview": "vite preview",
+  "lint": "eslint .",
+  "start": "vite preview"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
